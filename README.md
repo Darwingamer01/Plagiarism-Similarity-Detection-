@@ -1,424 +1,296 @@
 # AI-Powered Plagiarism Detection System
 
-**Version:** 3.0.0  
-**Stack:** React + TypeScript + Node.js + Python + Docker
+A comprehensive, full-stack plagiarism detection solution that leverages advanced AI to compare documents and detect similarities. Built with a modern tech stack including React, Node.js, Python, and Docker.
 
-## 🎯 Overview
+## 🚀 Features
 
-A production-ready AI plagiarism detection platform that uses semantic similarity analysis to detect document plagiarism. Built with a modern microservices architecture for scalability and performance.
+### Authentication & User Management
+- **Secure Authentication**: Email/Password login with JWT (Access & Refresh Tokens).
+- **OAuth Integration**: One-click login/register with **Google** and **Apple**.
+- **Email Verification**: OTP-based email verification for new accounts.
+- **Password Management**: Forgot Password, Reset Password, and Change Password flows.
+- **Profile Management**: Update profile details and manage API keys.
 
-### Key Features
+### Document Management
+- **File Upload**: Support for **PDF**, **DOCX**, and **TXT** files.
+- **Document Indexing**: Automatic text extraction, chunking, and vector embedding.
+- **Bulk Actions**: Delete multiple documents or clear history.
 
-- 📄 **Document Upload** - Support for TXT, PDF, DOCX formats (5MB limit)
-- 🤖 **AI-Powered Detection** - Semantic similarity using sentence-transformers
-- 📊 **Visual Results** - Interactive dashboards with color-coded risk levels
-- 🔐 **Secure Authentication** - JWT-based authentication with refresh tokens
-- 🚀 **Docker Deployment** - Fully containerized with docker-compose
-- ⚡ **High Performance** - Redis caching, PostgreSQL database
-- 📈 **Scalable Architecture** - Microservices with horizontal scaling support
+### Plagiarism Detection (AI Service)
+- **Advanced Similarity Search**: Uses **Sentence Transformers** (`all-MiniLM-L6-v2`) for semantic understanding.
+- **Vector Database**: **FAISS** (Facebook AI Similarity Search) for high-performance similarity matching.
+- **Detailed Results**: View similarity scores, matched documents, and highlighted text segments.
+- **History**: Track all past similarity checks.
 
-## 🏗️ Architecture
-
-```
-Frontend (React + TypeScript) → Backend (Node.js + Express) → AI Service (Python + FastAPI)
-                                         ↓                              ↓
-                                   PostgreSQL + Redis              FAISS Vector DB
-```
-
-### Services
-
-- **Frontend** - React 18 + TypeScript + Vite + Tailwind CSS (Port 3000)
-- **Backend** - Node.js 20 + Express + TypeScript (Port 8000)
-- **AI Service** - Python 3.11 + FastAPI + sentence-transformers (Port 8001)
-- **Database** - PostgreSQL 15 (Port 5432)
-- **Cache** - Redis 7 (Port 6379)
-- **Proxy** - nginx (Port 80/443)
-
-## 📋 Prerequisites
-
-- **Docker** 20.10+ and Docker Compose 2.0+
-- **Node.js** 20.x LTS (for local development)
-- **Python** 3.11+ (for local AI service development)
-- **Git** 2.x
-
-## 🚀 Quick Start
-
-### ⚡ **FAST** Development Setup (Recommended - 30 seconds)
-
-For daily development, skip Docker and run services individually:
-
-```bash
-# One-time setup (5 minutes)
-setup-first-time.bat
-
-# Start all services (30 seconds)
-start-dev.bat
-```
-
-See **[DEV_QUICK_START.md](DEV_QUICK_START.md)** for detailed instructions.
-
-**Why?** 10x faster than Docker, instant hot-reload, easier debugging!
+### System
+- **Dockerized**: Full stack containerization for easy deployment.
+- **Rate Limiting**: Protection against API abuse.
+- **Audit Logging**: Comprehensive logs for security and debugging.
 
 ---
 
-### 🐳 Docker Setup (For Production)
+## 🛠️ Tech Stack
 
-### 1. Clone Repository
+### Frontend
+- **Framework**: React 18 (Vite)
+- **Language**: TypeScript
+- **Styling**: TailwindCSS, Radix UI, Shadcn/UI
+- **State Management**: Zustand, React Query
+- **Routing**: React Router DOM
 
-```bash
-git clone <repository-url>
-cd plagiarism-detection-system
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Language**: TypeScript
+- **Database**: PostgreSQL (Primary), Redis (Caching & Session)
+- **Auth**: JWT, Google Auth Library, Apple Sign-In
+
+### AI Service
+- **Language**: Python 3.11
+- **Framework**: FastAPI
+- **ML Libraries**: Sentence Transformers, PyTorch, FAISS
+- **Server**: Uvicorn
+
+### Infrastructure
+- **Containerization**: Docker, Docker Compose
+- **Reverse Proxy**: Nginx (Production)
+
+---
+
+## 📂 Project Structure
+
+Understanding the codebase structure will help you navigate and contribute effectively.
+
+```
+├── ai-service/          # Python FastAPI service for AI logic
+│   ├── app/             # Core application code
+│   │   ├── document_processor.py # Text extraction & embedding logic
+│   │   ├── similarity_checker.py # FAISS index management
+│   │   └── main.py      # API endpoints
+│   ├── data/            # FAISS index storage (persisted)
+│   └── models/          # ML model cache (downloaded on first run)
+├── backend/             # Node.js Express API
+│   ├── src/
+│   │   ├── controllers/ # Request handlers (Auth, Document, etc.)
+│   │   ├── models/      # Database models
+│   │   ├── routes/      # API route definitions
+│   │   └── services/    # Business logic (AuthService, EmailService)
+├── frontend/            # React application
+│   ├── src/
+│   │   ├── components/  # Reusable UI components (Buttons, Inputs, Modals)
+│   │   ├── pages/       # Application pages (Login, Dashboard, Upload)
+│   │   └── services/    # API client services (Axios configuration)
+├── nginx/               # Nginx configuration for production
+└── docker-compose.yml   # Docker orchestration configuration
 ```
 
-### 2. Environment Configuration
+---
 
-Create `.env` files for each service:
+## ⚡ Getting Started
 
+You can run the project using **Docker** (recommended for ease) or **Locally** (for development).
+
+### Prerequisites
+- **Docker & Docker Compose** (for Docker method)
+- **Node.js v18+** (for Local method)
+- **Python 3.11+** (for Local method)
+- **PostgreSQL & Redis** (for Local method)
+
+### Method 1: Run with Docker (Recommended)
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <repo-url>
+    cd Final-year-major-project
+    ```
+
+2.  **Configure Environment:**
+    - The project comes with default configuration in `docker-compose.yml`.
+    - For Google OAuth, you must set `GOOGLE_CLIENT_ID` in `backend/.env` (create it from `.env.example`).
+
+3.  **Start the application:**
+    ```bash
+    docker-compose up --build
+    ```
+    *This command builds all images and starts Frontend, Backend, AI Service, Postgres, and Redis.*
+
+4.  **Access the application:**
+    - Frontend: `http://localhost:3000`
+    - Backend API: `http://localhost:8000`
+    - AI Service: `http://localhost:8001`
+
+### Method 2: Run Locally (Without Docker)
+
+If you prefer to run services individually in separate terminals:
+
+#### 1. Database Setup
+Ensure you have PostgreSQL and Redis running locally.
+- Create a database named `plagiarism_db`.
+- Update `.env` files in `backend` if your credentials differ from defaults.
+
+#### 2. Backend Setup
 ```bash
-# Backend
-cp backend/.env.example backend/.env
-
-# Frontend (if needed for local dev)
-cp frontend/.env.example frontend/.env
-
-# AI Service
-cp ai-service/.env.example ai-service/.env
+cd backend
+# Copy example env
+cp .env.example .env
+# Edit .env with your DB credentials and Google Client ID
+npm install
+# Run database migrations/setup
+npm run migrate # or execute setup-db.sql manually
+# Start server
+npm run dev
 ```
+*Backend runs on port 8000.*
 
-### 3. Start with Docker Compose
-
+#### 3. AI Service Setup
 ```bash
-# Build and start all services
-docker-compose up --build -d
+cd ai-service
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# Mac/Linux
+source venv/bin/activate
 
-# Check service status
-docker-compose ps
-
-# View logs
-docker-compose logs -f
+pip install -r requirements.txt
+python main.py
 ```
+*AI Service runs on port 8001.*
 
-### 4. Initialize Database
-
-```bash
-# Run database migrations
-docker-compose exec backend npm run migrate
-
-# (Optional) Seed sample data
-docker-compose exec backend npm run seed
-```
-
-### 5. Access Application
-
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:8000
-- **API Docs:** http://localhost:8000/api-docs
-- **AI Service:** http://localhost:8001/docs
-
-## 💻 Local Development
-
-### Frontend Development
-
+#### 4. Frontend Setup
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-
-### Backend Development
-
-```bash
-cd backend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-### AI Service Development
-
-```bash
-cd ai-service
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn main:app --reload --port 8001
-```
-
-### Database Setup (Local)
-
-```bash
-# Start PostgreSQL and Redis
-docker-compose up postgres redis -d
-
-# Run migrations
-cd backend
-npm run migrate
-```
-
-## 🧪 Testing
-
-### Run All Tests
-
-```bash
-# Frontend tests
-cd frontend && npm test
-
-# Backend tests
-cd backend && npm test
-
-# AI Service tests
-cd ai-service && pytest
-```
-
-### Test Coverage
-
-```bash
-# Frontend coverage
-cd frontend && npm run test:coverage
-
-# Backend coverage
-cd backend && npm run test:coverage
-```
-
-## 📚 API Documentation
-
-### Authentication Endpoints
-
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login and get JWT tokens
-- `POST /api/auth/refresh` - Refresh access token
-- `POST /api/auth/logout` - Logout user
-
-### Document Endpoints
-
-- `POST /api/documents/ingest` - Upload and index documents
-- `GET /api/documents` - List user's documents
-- `GET /api/documents/:id` - Get document details
-- `DELETE /api/documents/:id` - Delete document
-
-### Similarity Endpoints
-
-- `POST /api/similarity/check` - Check document similarity
-- `GET /api/similarity/results/:id` - Get similarity results
-- `GET /api/similarity/history` - Get check history
-
-### System Endpoints
-
-- `GET /api/health` - Health check (no auth)
-- `GET /api/status` - System status (requires auth)
-- `GET /api/stats` - Usage statistics
-
-**Full API Documentation:** http://localhost:8000/api-docs
-
-## 🔐 Security
-
-### Environment Variables
-
-**Never commit sensitive credentials!** Use strong passwords and secrets in production.
-
-Key environment variables:
-
-- `JWT_SECRET` - Minimum 32 characters
-- `JWT_REFRESH_SECRET` - Minimum 32 characters
-- `DATABASE_URL` - PostgreSQL connection string
-- `REDIS_URL` - Redis connection string
-
-### Security Features
-
-- JWT authentication with refresh tokens
-- bcrypt password hashing (10 salt rounds)
-- Rate limiting (100 requests/minute)
-- CORS configuration
-- Helmet security headers
-- Input validation and sanitization
-- File upload restrictions (5MB limit)
-
-## 📊 Database Schema
-
-### Tables
-
-- **users** - User accounts and authentication
-- **documents** - Uploaded document metadata
-- **document_chunks** - Document text chunks with embeddings
-- **similarity_checks** - Similarity check results
-- **audit_logs** - System audit trail
-
-**Database Migrations:** Located in `backend/src/migrations/`
-
-## 🐳 Docker Configuration
-
-### Build Images
-
-```bash
-# Build all images
-docker-compose build
-
-# Build specific service
-docker-compose build backend
-```
-
-### Scale Services
-
-```bash
-# Scale backend to 3 instances
-docker-compose up --scale backend=3 -d
-```
-
-### View Logs
-
-```bash
-# All services
-docker-compose logs -f
-
-# Specific service
-docker-compose logs -f backend
-```
-
-### Stop Services
-
-```bash
-# Stop all services
-docker-compose down
-
-# Stop and remove volumes
-docker-compose down -v
-```
-
-## 🔧 Configuration
-
-### Backend Configuration
-
-Edit `backend/.env`:
-
-```env
-NODE_ENV=production
-PORT=8000
-DATABASE_URL=postgresql://user:pass@postgres:5432/plagiarism_db
-REDIS_URL=redis://redis:6379
-AI_SERVICE_URL=http://ai-service:8001
-JWT_SECRET=your-secret-key-min-32-chars
-JWT_REFRESH_SECRET=your-refresh-secret-min-32-chars
-MAX_FILE_SIZE=5242880
-UPLOAD_DIR=./uploads
-```
-
-### AI Service Configuration
-
-Edit `ai-service/.env`:
-
-```env
-MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
-DATA_DIR=/app/data
-CHUNK_SIZE=300
-CHUNK_OVERLAP=50
-```
-
-## 📈 Performance
-
-### Optimization Tips
-
-- Enable Redis caching for frequently accessed data
-- Use connection pooling for database queries
-- Implement CDN for static assets
-- Enable gzip compression in nginx
-- Use FAISS IVF indexing for large document sets
-
-### Monitoring
-
-- Check logs: `docker-compose logs -f`
-- Health endpoint: `curl http://localhost:8000/api/health`
-- Resource usage: `docker stats`
-
-## 🚧 Troubleshooting
-
-### Common Issues
-
-**Port Already in Use:**
-```bash
-# Check what's using the port
-netstat -ano | findstr :8000  # Windows
-lsof -i :8000  # Linux/Mac
-
-# Change port in docker-compose.yml
-```
-
-**Database Connection Error:**
-```bash
-# Check if PostgreSQL is running
-docker-compose ps postgres
-
-# View PostgreSQL logs
-docker-compose logs postgres
-```
-
-**AI Service Not Responding:**
-```bash
-# Check AI service status
-docker-compose logs ai-service
-
-# Restart AI service
-docker-compose restart ai-service
-```
-
-## 📝 Development Workflow
-
-### Git Workflow
-
-1. Create feature branch: `git checkout -b feature/your-feature`
-2. Make changes and commit: `git commit -m "feat: add feature"`
-3. Push branch: `git push origin feature/your-feature`
-4. Create Pull Request
-5. Merge to main after review
-
-### Commit Message Convention
-
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `style:` - Code style changes
-- `refactor:` - Code refactoring
-- `test:` - Test changes
-- `chore:` - Build/config changes
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👥 Team
-
-- **Frontend Developer** - React, TypeScript, UI/UX
-- **Backend Developer** - Node.js, PostgreSQL, APIs
-- **AI/ML Engineer** - Python, FAISS, embeddings
-- **DevOps Engineer** - Docker, CI/CD, monitoring
-
-## 📞 Support
-
-For issues and questions:
-
-- **GitHub Issues:** [Create an issue](issues)
-- **Email:** support@example.com
-- **Docs:** [Full Documentation](docs/)
-
-## 🗺️ Roadmap
-
-- [ ] Multi-language support
-- [ ] OCR for scanned documents
-- [ ] Real-time WebSocket updates
-- [ ] Advanced analytics dashboard
-- [ ] Mobile app (React Native)
-- [ ] API webhooks
-- [ ] Team collaboration features
+*Frontend runs on port 5173 (or 3000 if configured).*
 
 ---
 
-**Version:** 3.0.0  
-**Last Updated:** 2024-01-18  
-**Status:** Production Ready
+## 📖 Detailed User Guide & Flow
+
+### 1. Authentication Flow
+The system supports both traditional email/password and OAuth.
+
+#### Registration (Email/Password)
+1.  Go to the **Register** page.
+2.  Enter Name, Email, and Password.
+3.  **OTP Verification**:
+    - The system sends a 6-digit OTP to your email.
+    - **Local Development**: Since we use a Mock Email Service, **check the Backend Terminal/Logs**.
+    - Look for:
+      ```
+      INFO: 📧 EMAIL MOCK: Email Verification
+      INFO: To: user@example.com
+      INFO: OTP: 123456
+      ```
+    - Enter `123456` in the frontend to verify and complete registration.
+
+#### Login & Dashboard
+- Login with your credentials.
+- You will be redirected to the **Dashboard**, which shows:
+    - Recent activity stats.
+    - Quick actions (Upload, Check Similarity).
+    - Usage metrics.
+
+#### Google OAuth (One-Click Login)
+1.  **Configuration**:
+    - Create a project in Google Cloud Console.
+    - Enable "Google Identity" / "OAuth 2.0".
+    - Get your `CLIENT_ID`.
+    - Add it to `backend/.env` (`GOOGLE_CLIENT_ID`) and `frontend/.env` (`VITE_GOOGLE_CLIENT_ID`).
+2.  **Usage**:
+    - Click "Continue with Google" on Login/Register page.
+    - **First Time**: You will be asked to confirm your name. An account is created automatically (no password needed).
+    - **Returning**: Logs you in directly.
+
+### 2. Password Management
+- **Forgot Password**:
+    - Click "Forgot Password" on login page.
+    - Enter email -> Check Backend Logs for **Reset Link**.
+    - Click link -> Set new password.
+- **Change Password**:
+    - Go to **Settings**.
+    - Enter current password and new password.
+- **Set Password (OAuth Users)**:
+    - If you logged in via Google, you don't have a password.
+    - Go to **Settings** -> "Set Password".
+    - This enables you to login with email/password in the future.
+
+### 3. Plagiarism Detection Flow
+1.  **Upload Document**:
+    - Go to **Upload** page.
+    - Drag & drop a PDF/DOCX/TXT file.
+    - The file is sent to the AI Service, text is extracted, chunked, and indexed.
+2.  **Check Similarity**:
+    - Go to **Check Similarity** page.
+    - Upload a *query document*.
+    - The system compares this document against *all previously indexed documents*.
+3.  **View Results**:
+    - See a percentage score (e.g., "85% Similar").
+    - View the specific document it matched with.
+    - See the exact text segments that matched.
+
+---
+
+## 🧠 Technical Deep Dive: AI Service
+
+The `ai-service` is the brain of the operation. Here's how it works:
+
+### 1. Text Extraction & Cleaning
+- **File Handling**: Uses `pdfplumber` for PDFs and `python-docx` for Word docs.
+- **Cleaning**: Removes excessive whitespace and special characters to normalize text for the model.
+
+### 2. Smart Chunking Algorithm
+- **Why Chunking?** LLMs and embedding models have token limits. We can't feed a whole book at once.
+- **Algorithm**:
+    - Splits text into chunks of **300 words**.
+    - Uses an **Overlap of 50 words**.
+    - *Why Overlap?* To preserve context between chunks. If a plagiarized sentence is split between two chunks, the overlap ensures it's caught in at least one.
+
+### 3. Vector Embeddings
+- **Model**: `sentence-transformers/all-MiniLM-L6-v2`.
+- **Process**: Converts every text chunk into a **384-dimensional vector** (a list of 384 numbers).
+- **Semantic Meaning**: These numbers represent the *meaning* of the text, not just keywords. "The cat sat on the mat" and "The feline rested on the rug" will have very similar vectors.
+
+### 4. Similarity Search (FAISS)
+- **Storage**: Vectors are stored in a FAISS (Facebook AI Similarity Search) index.
+- **Search**: When you query a document, we calculate the **Cosine Similarity** between the query vectors and the stored vectors.
+- **Speed**: FAISS is optimized for searching millions of vectors in milliseconds.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1.  **Fork & Clone**: Fork the repo and clone it locally.
+2.  **Branch**: Create a new branch for your feature (`git checkout -b feature/amazing-feature`).
+3.  **Develop**:
+    - **Frontend**: Work in `frontend/src`. Components are in `components/`, pages in `pages/`.
+    - **Backend**: Work in `backend/src`. Add routes in `routes/` and logic in `controllers/`.
+    - **AI**: Work in `ai-service/app`.
+4.  **Test**:
+    - Run `npm run test` in backend/frontend (if tests exist).
+    - Manually verify flows using the Local Development steps above.
+5.  **Commit & Push**: Use descriptive commit messages.
+6.  **Pull Request**: Open a PR describing your changes.
+
+---
+
+## 🚀 Deployment
+
+To deploy this to a production server (e.g., AWS EC2, DigitalOcean):
+
+1.  **Provision Server**: Get a Linux server with Docker installed.
+2.  **Environment Variables**:
+    - Create a `.env` file on the server with production values (strong passwords, real API keys).
+3.  **Run with Docker**:
+    ```bash
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+    ```
+    *(Note: You may need to create a `docker-compose.prod.yml` for specific production overrides like removing exposed ports or setting restart policies).*
+4.  **Nginx**: The included Nginx configuration handles routing and can be configured for SSL (Let's Encrypt).
+
+---
+
+
