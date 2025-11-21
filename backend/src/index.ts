@@ -57,8 +57,8 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `http://localhost:${config.server.port}`,
-        description: 'Development server'
+        url: '/',
+        description: 'Current server'
       }
     ],
     components: {
@@ -76,7 +76,7 @@ const swaggerOptions = {
       }
     }
   },
-  apis: ['./src/routes/*.ts']
+  apis: [process.env.NODE_ENV === 'production' ? './dist/routes/*.js' : './src/routes/*.ts']
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
@@ -122,8 +122,8 @@ const PORT = config.server.port;
 
 app.listen(PORT, () => {
   logger.info(`🚀 Server running on port ${PORT}`);
-  logger.info(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
-  logger.info(`🏥 Health Check: http://localhost:${PORT}/health`);
+  logger.info(`📚 API Documentation: /api-docs`);
+  logger.info(`🏥 Health Check: /health`);
   logger.info(`🌍 Environment: ${config.node.env}`);
 });
 

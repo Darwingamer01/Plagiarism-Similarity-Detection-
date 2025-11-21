@@ -295,7 +295,7 @@ export class AuthService {
 
     // Create reset link
     // Assuming frontend is running on port 5173 (Vite default) or configured URL
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = process.env.FRONTEND_URL;
     const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
 
     // Send email

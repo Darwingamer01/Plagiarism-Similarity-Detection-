@@ -19,7 +19,7 @@ export const config = {
     }
   },
   redis: {
-    url: process.env.REDIS_URL || 'redis://localhost:6379',
+    url: process.env.REDIS_URL,
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379', 10),
     password: process.env.REDIS_PASSWORD || '',
@@ -32,7 +32,7 @@ export const config = {
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d'
   },
   aiService: {
-    url: process.env.AI_SERVICE_URL || 'http://localhost:8001',
+    url: process.env.AI_SERVICE_URL,
     timeout: parseInt(process.env.AI_SERVICE_TIMEOUT || '60000', 10)
   },
   upload: {
@@ -47,7 +47,7 @@ export const config = {
     rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10)
   },
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN,
     credentials: process.env.CORS_CREDENTIALS || 'true'
   },
   logging: {
