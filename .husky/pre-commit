@@ -3,13 +3,19 @@
 
 echo "Running pre-commit checks..."
 
+
 # Frontend
 echo "Checking Frontend..."
 cd frontend
 echo "Running Frontend Lint..."
 npm run lint || exit 1
 echo "Running Frontend Tests..."
-npm run test -- --run || exit 1
+TEST_FILES=$(find src -type f -name "*.test.*" -o -name "*.spec.*")
+if [ -n "$TEST_FILES" ]; then
+	npm run test -- --run || exit 1
+else
+	echo "No frontend test files found, skipping test check."
+fi
 cd ..
 
 # Backend
@@ -18,7 +24,12 @@ cd backend
 echo "Running Backend Lint..."
 npm run lint || exit 1
 echo "Running Backend Tests..."
-npm run test || exit 1
+TEST_FILES=$(find src -type f -name "*.test.*" -o -name "*.spec.*")
+if [ -n "$TEST_FILES" ]; then
+	npm run test || exit 1
+else
+	echo "No backend test files found, skipping test check."
+fi
 cd ..
 
 echo "All checks passed!"
