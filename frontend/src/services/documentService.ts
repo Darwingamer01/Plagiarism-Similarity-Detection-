@@ -1,8 +1,8 @@
 import api from './api'
-import { Document, PaginationParams, DocumentsResponse } from '../types'
+import { Document, PaginationParams, DocumentsResponse, IngestResponse } from '../types'
 
 export const documentService = {
-  async ingestDocuments(files: File[]): Promise<any> {
+  async ingestDocuments(files: File[]): Promise<IngestResponse> {
     const formData = new FormData()
     files.forEach((file) => {
       formData.append('files', file)

@@ -49,9 +49,25 @@ export interface SimilarityCheck {
 export interface SimilarityResult {
   checkId: string
   queryFilename: string
+  threshold: number
   maxSimilarity: number
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH'
-  similarDocuments: SimilarDocument[]
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY HIGH' | 'VERY LOW'
+  status: string
+  results: {
+    similar_documents: SimilarDocument[]
+  }
+  createdAt: string
+  completedAt: string
+}
+
+export interface IngestResponse {
+  processedFiles: Array<{
+    documentId?: string
+    filename: string
+    chunksAdded?: number
+    status: string
+    error?: string
+  }>
 }
 
 export interface SimilarDocument {
@@ -114,3 +130,35 @@ export interface SimilarityHistoryResponse {
     totalPages: number
   }
 }
+
+export interface OAuthLoginResponse {
+  isNewUser: boolean
+  data: {
+    user?: User
+    tokens?: AuthTokens
+    profile?: {
+      email: string
+      name: string
+      fullName?: string
+      picture?: string
+      providerId?: string
+    }
+  }
+}
+
+export interface BackendError {
+  message: string;
+  statusCode?: number;
+}
+
+export interface ApiResponseError {
+  response?: {
+    data?: {
+      error?: BackendError;
+    };
+    status?: number;
+    statusText?: string;
+  };
+  message?: string; // For network errors or other client-side errors not from the backend
+}
+

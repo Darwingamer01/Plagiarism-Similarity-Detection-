@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import { useAuthStore } from '../stores/authStore'
 
-const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export const api = axios.create({
   baseURL: `${API_URL}/api`,
@@ -28,6 +28,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const originalRequest: any = error.config
 
     // Handle 401 errors (token expired)

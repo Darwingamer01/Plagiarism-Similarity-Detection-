@@ -1,3 +1,13 @@
+// Type guard for error with response structure
+function isAxiosErrorWithMessage(error: unknown): error is { response: { data: { error?: { message?: string } } } } {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'response' in error &&
+    typeof (error as { response?: unknown }).response === 'object' &&
+    (error as { response: { data?: unknown } }).response.data !== undefined
+  );
+}
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
@@ -71,49 +81,81 @@ export default function LoginPage() {
       toast.success('Login successful!')
       navigate('/dashboard')
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.error?.message || 'Login failed')
+    onError: (error: unknown) => {
+      if (
+        isAxiosErrorWithMessage(error) &&
+        typeof error.response.data.error?.message === 'string'
+      ) {
+        toast.error(error.response.data.error.message);
+      } else {
+        toast.error('Login failed');
+      }
     },
   })
 
   const googleLoginMutation = useMutation({
     mutationFn: (token: string) => authService.googleLogin(token),
     onSuccess: (result) => {
-      if (result.isNewUser) {
+      const payload = result.data;
+      if (payload.isNewUser) {
         // Redirect to complete registration
+        const profile = payload.data?.profile;
         navigate('/complete-registration', {
           state: {
             oauthData: {
-              email: result.data.profile.email,
-              fullName: result.data.profile.fullName,
+              email: profile?.email || '',
+              fullName: profile?.fullName || profile?.name || '',
               provider: 'google',
-              providerId: result.data.profile.providerId,
+              providerId: profile?.providerId || '',
             }
           }
-        })
+        });
       } else {
         // Login successful
-        setUser(result.data.user)
-        setTokens(result.data.accessToken, result.data.refreshToken)
-        toast.success('Login successful!')
-        navigate('/dashboard')
+        if (
+          payload.data?.user &&
+          payload.data?.tokens?.accessToken &&
+          payload.data?.tokens?.refreshToken
+        ) {
+          setUser(payload.data.user);
+          setTokens(payload.data.tokens.accessToken, payload.data.tokens.refreshToken);
+          toast.success('Login successful!');
+          navigate('/dashboard');
+        } else {
+          toast.error('Invalid login response from server.');
+          console.log('Google login response:', result);
+        }
       }
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.error?.message || 'Google login failed')
+    onError: (error: unknown) => {
+      if (
+        isAxiosErrorWithMessage(error) &&
+        typeof error.response.data.error?.message === 'string'
+      ) {
+        toast.error(error.response.data.error.message);
+      } else {
+        toast.error('Google login failed');
+      }
     },
   })
 
 
 
-  const handleGoogleLogin = GOOGLE_CLIENT_ID ? useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      googleLoginMutation.mutate(tokenResponse.access_token)
-    },
-    onError: () => {
-      toast.error('Google login failed')
-    },
-  }) : () => toast.error('Google OAuth is not configured')
+const googleLogin = useGoogleLogin({
+  onSuccess: async (tokenResponse) => {
+    googleLoginMutation.mutate(tokenResponse.access_token);
+  },
+  onError: () => {
+    toast.error('Google login failed');
+  },
+});
+const handleGoogleLogin = () => {
+  if (!GOOGLE_CLIENT_ID) {
+    toast.error('Google OAuth is not configured');
+    return;
+  }
+  googleLogin();
+};
 
 
 

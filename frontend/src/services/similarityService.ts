@@ -20,7 +20,7 @@ export const similarityService = {
     return response.data.data
   },
 
-  async getResult(id: string): Promise<any> {
+  async getResult(id: string): Promise<SimilarityResult> {
     const response = await api.get(`/similarity/results/${id}`)
     return response.data.data
   },

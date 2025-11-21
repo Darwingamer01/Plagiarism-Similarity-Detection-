@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { userService } from '../services/userService';
-import { logger } from '../utils/logger';
 import Joi from 'joi';
 
 // Validation schemas

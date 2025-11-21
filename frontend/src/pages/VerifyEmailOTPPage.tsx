@@ -29,6 +29,7 @@ export default function VerifyEmailOTPPage() {
             toast.success('Email updated successfully!')
             navigate('/settings')
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
             toast.error(error.response?.data?.error?.message || 'Invalid or expired code')
         },
@@ -41,6 +42,7 @@ export default function VerifyEmailOTPPage() {
         onSuccess: () => {
             toast.success('New verification code sent!')
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
             toast.error(error.response?.data?.error?.message || 'Failed to resend code')
         },

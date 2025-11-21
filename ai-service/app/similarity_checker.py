@@ -151,9 +151,9 @@ class SimilarityChecker:
                     if idx < 0 or idx >= len(self.metadata):
                         continue
                     
-                    # REMOVED threshold filter - now includes ALL documents even with 0% similarity
-                    # if sim < threshold:
-                    #     continue
+                    # Apply threshold filter - only include documents above threshold
+                    if sim < threshold:
+                        continue
                     
                     meta = self.metadata[idx]
                     doc_id = meta['document_id']

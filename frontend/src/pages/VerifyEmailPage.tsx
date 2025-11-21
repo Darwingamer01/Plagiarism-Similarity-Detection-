@@ -32,6 +32,7 @@ export default function VerifyEmailPage() {
       toast.success('Email verified successfully! Welcome!')
       navigate('/dashboard')
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       toast.error(error.response?.data?.error?.message || 'Verification failed')
     },
@@ -46,14 +47,14 @@ export default function VerifyEmailPage() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
       className="min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/20 p-4"
     >
       <div className="w-full max-w-md">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -72,63 +73,63 @@ export default function VerifyEmailPage() {
           transition={{ duration: 0.5, delay: 0.2 }}
         >
           <Card className="border-2">
-          <CardHeader className="space-y-1">
-            <div className="flex items-center justify-center mb-4">
-              <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10">
-                <Mail className="h-6 w-6 text-primary" />
+            <CardHeader className="space-y-1">
+              <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10">
+                  <Mail className="h-6 w-6 text-primary" />
+                </div>
               </div>
-            </div>
-            <CardTitle className="text-2xl font-bold text-center">Verify your email</CardTitle>
-            <CardDescription className="text-center">
-              We've sent a 6-digit code to <strong>{email}</strong>
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex flex-col items-center space-y-4">
-              <InputOTP
-                maxLength={6}
-                value={otp}
-                onChange={(value) => setOtp(value)}
-              >
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
+              <CardTitle className="text-2xl font-bold text-center">Verify your email</CardTitle>
+              <CardDescription className="text-center">
+                We've sent a 6-digit code to <strong>{email}</strong>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col items-center space-y-4">
+                <InputOTP
+                  maxLength={6}
+                  value={otp}
+                  onChange={(value) => setOtp(value)}
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
 
-              <Alert className="w-full">
-                <AlertDescription className="text-xs text-center">
-                  Check your email inbox (and spam folder) for the verification code. The code expires in 10 minutes.
-                </AlertDescription>
-              </Alert>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button
-              onClick={handleVerify}
-              disabled={verifyMutation.isPending || otp.length !== 6}
-              className="w-full h-11"
-              size="lg"
-            >
-              {verifyMutation.isPending ? 'Verifying...' : 'Verify Email'}
-            </Button>
-
-            <div className="text-center text-sm text-muted-foreground">
-              Didn't receive the code?{' '}
+                <Alert className="w-full">
+                  <AlertDescription className="text-xs text-center">
+                    Check your email inbox (and spam folder) for the verification code. The code expires in 10 minutes.
+                  </AlertDescription>
+                </Alert>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4">
               <Button
-                variant="link"
-                className="p-0 h-auto font-normal"
-                onClick={() => navigate('/register')}
+                onClick={handleVerify}
+                disabled={verifyMutation.isPending || otp.length !== 6}
+                className="w-full h-11"
+                size="lg"
               >
-                Go back to register
+                {verifyMutation.isPending ? 'Verifying...' : 'Verify Email'}
               </Button>
-            </div>
-          </CardFooter>
-        </Card>
+
+              <div className="text-center text-sm text-muted-foreground">
+                Didn't receive the code?{' '}
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-normal"
+                  onClick={() => navigate('/register')}
+                >
+                  Go back to register
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
         </motion.div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">

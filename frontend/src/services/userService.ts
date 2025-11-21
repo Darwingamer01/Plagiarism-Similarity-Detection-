@@ -28,7 +28,7 @@ export const userService = {
     /**
      * Change password (for users with existing password)
      */
-    async changePassword(data: any) {
+    async changePassword(data: { currentPassword?: string; newPassword?: string; confirmPassword?: string }) {
         const response = await api.post('/users/change-password', data)
         return response.data.data
     },
@@ -36,7 +36,7 @@ export const userService = {
     /**
      * Set password (for OAuth users without password)
      */
-    async setPassword(data: any) {
+    async setPassword(data: { newPassword?: string; confirmPassword?: string }) {
         const response = await api.post('/users/set-password', data)
         return response.data.data
     },

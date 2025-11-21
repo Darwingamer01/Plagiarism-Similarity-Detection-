@@ -1,0 +1,18 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "Running pre-push build checks..."
+
+# Frontend
+echo "Building Frontend..."
+cd frontend
+npm run build || exit 1
+cd ..
+
+# Backend
+echo "Building Backend..."
+cd backend
+npm run build || exit 1
+cd ..
+
+echo "Builds successful!"

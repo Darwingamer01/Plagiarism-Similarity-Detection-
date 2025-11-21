@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { authService } from '../services/authService';
 import { validateRegistration, validateLogin, validateForgotPassword, validateResetPassword, validateInitiateRegistration, validateVerifyRegistration } from '../utils/validation';
-import { logger } from '../utils/logger';
+// import { logger } from '../utils/logger';
 
 export class AuthController {
   async initiateRegister(req: Request, res: Response, next: NextFunction) {
@@ -279,30 +279,6 @@ export class AuthController {
     }
   }
 
-  async appleLogin(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { identityToken } = req.body;
-
-      if (!identityToken) {
-        return res.status(400).json({
-          success: false,
-          error: {
-            message: 'Apple identity token is required',
-            statusCode: 400
-          }
-        });
-      }
-
-      const result = await authService.handleOAuthLogin('apple', identityToken);
-
-      res.status(200).json({
-        success: true,
-        data: result
-      });
-    } catch (error) {
-      next(error);
-    }
-  }
 
   async completeOAuthRegistration(req: Request, res: Response, next: NextFunction) {
     try {
@@ -318,11 +294,11 @@ export class AuthController {
         });
       }
 
-      if (provider !== 'google' && provider !== 'apple') {
+      if (provider !== 'google') {
         return res.status(400).json({
           success: false,
           error: {
-            message: 'Invalid provider. Must be "google" or "apple"',
+            message: 'Invalid provider. Must be "google"',
             statusCode: 400
           }
         });

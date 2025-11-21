@@ -25,6 +25,7 @@ export default function ResetPasswordPage() {
             setIsSuccess(true)
             toast.success('Password reset successfully')
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
             toast.error(error.response?.data?.error?.message || 'Failed to reset password')
         },

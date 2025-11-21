@@ -265,28 +265,6 @@ router.post('/reset-password', authLimiter, authController.resetPassword.bind(au
  */
 router.post('/google', authLimiter, authController.googleLogin.bind(authController));
 
-/**
- * @swagger
- * /api/auth/apple:
- *   post:
- *     summary: Login/Register with Apple
- *     tags: [Authentication]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - identityToken
- *             properties:
- *               identityToken:
- *                 type: string
- *     responses:
- *       200:
- *         description: Login successful or new user profile returned
- */
-router.post('/apple', authLimiter, authController.appleLogin.bind(authController));
 
 /**
  * @swagger
@@ -312,7 +290,7 @@ router.post('/apple', authLimiter, authController.appleLogin.bind(authController
  *                 type: string
  *               provider:
  *                 type: string
- *                 enum: [google, apple]
+ *                 enum: [google]
  *               providerId:
  *                 type: string
  *     responses:

@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 import { logger } from '../utils/logger';
 
 interface CustomError extends Error {
@@ -10,8 +10,7 @@ interface CustomError extends Error {
 export const errorHandler = (
   err: CustomError,
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';

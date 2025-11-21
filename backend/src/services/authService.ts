@@ -1,14 +1,11 @@
 import bcrypt from 'bcrypt';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
-import { OAuth2Client } from 'google-auth-library';
 import { db } from '../config/database';
 import { redis } from '../config/redis';
 import { config } from '../config/environment';
 import { AppError } from '../middleware/errorHandler';
 import { logger } from '../utils/logger';
-
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 interface RegisterData {
   email: string;
@@ -362,55 +359,20 @@ export class AuthService {
     }
   }
 
-  async verifyAppleToken(identityToken: string) {
-    try {
-      if (!process.env.APPLE_CLIENT_ID) {
-        // Mock mode for development
-        logger.warn('Apple OAuth: No APPLE_CLIENT_ID found, using mock mode');
-        return {
-          email: `mock-apple-${Date.now()}@example.com`,
-          name: 'Mock Apple User',
-          sub: `apple_mock_${Date.now()}`,
-        };
-      }
 
-      const appleAuth = require('apple-signin-auth');
-      const appleIdTokenPayload = await appleAuth.verifyIdToken(identityToken, {
-        audience: process.env.APPLE_CLIENT_ID,
-        ignoreExpiration: false,
-      });
 
-      return {
-        email: appleIdTokenPayload.email || '',
-        name: appleIdTokenPayload.name || '',
-        sub: appleIdTokenPayload.sub,
-      };
-    } catch (error) {
-      logger.error('Apple token verification failed:', error);
-      throw new AppError('Invalid Apple token', 401);
-    }
-  }
-
-  async handleOAuthLogin(provider: 'google' | 'apple', token: string) {
-    let profile: { email: string; name: string; sub: string };
-
-    if (provider === 'google') {
-      profile = await this.verifyGoogleToken(token);
-    } else {
-      profile = await this.verifyAppleToken(token);
-    }
+  async handleOAuthLogin(provider: 'google', token: string) {
+    const profile = await this.verifyGoogleToken(token);
 
     if (!profile.email) {
       throw new AppError('Email not provided by OAuth provider', 400);
     }
 
-    const providerIdColumn = provider === 'google' ? 'google_id' : 'apple_id';
-
     // Check if user exists by provider ID or email
     const result = await db.query(
-      `SELECT id, email, full_name, role, ${providerIdColumn} 
+      `SELECT id, email, full_name, role, google_id 
        FROM users 
-       WHERE email = $1 OR ${providerIdColumn} = $2`,
+       WHERE email = $1 OR google_id = $2`,
       [profile.email, profile.sub]
     );
 
@@ -418,9 +380,9 @@ export class AuthService {
       // Existing user - update provider ID if not set
       const user = result.rows[0];
 
-      if (!user[providerIdColumn]) {
+      if (!user.google_id) {
         await db.query(
-          `UPDATE users SET ${providerIdColumn} = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
+          `UPDATE users SET google_id = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2`,
           [profile.sub, user.id]
         );
       }
@@ -440,16 +402,20 @@ export class AuthService {
       return {
         success: true,
         isNewUser: false,
-        accessToken,
-        refreshToken,
-        expiresIn: 900,
-        user: {
-          id: user.id,
-          email: user.email,
-          fullName: user.full_name,
-          role: user.role,
-          hasPassword: !!user.password_hash
-        },
+        data: {
+          user: {
+            id: user.id,
+            email: user.email,
+            fullName: user.full_name,
+            role: user.role,
+            hasPassword: !!user.password_hash
+          },
+          tokens: {
+            accessToken,
+            refreshToken,
+            expiresIn: 900
+          }
+        }
       };
     }
 
@@ -457,19 +423,21 @@ export class AuthService {
     return {
       success: true,
       isNewUser: true,
-      profile: {
-        email: profile.email,
-        fullName: profile.name,
-        providerId: profile.sub,
-        provider,
-      },
+      data: {
+        profile: {
+          email: profile.email,
+          fullName: profile.name,
+          providerId: profile.sub,
+          provider,
+        }
+      }
     };
   }
 
   async completeOAuthRegistration(data: {
     email: string;
     fullName: string;
-    provider: 'google' | 'apple';
+    provider: 'google';
     providerId: string;
   }) {
     const { email, fullName, provider, providerId } = data;

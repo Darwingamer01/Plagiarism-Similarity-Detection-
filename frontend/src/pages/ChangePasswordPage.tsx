@@ -25,8 +25,10 @@ export default function ChangePasswordPage() {
             toast.success('Password changed successfully')
             navigate('/')
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
-            toast.error(error.response?.data?.error?.message || 'Failed to change password')
+            const message = error.response?.data?.error?.message || 'Failed to change password'
+            toast.error(message)
         },
     })
 
@@ -49,7 +51,7 @@ export default function ChangePasswordPage() {
         }
 
         changePasswordMutation.mutate({
-            oldPassword,
+            currentPassword: oldPassword,
             newPassword,
             confirmPassword
         })

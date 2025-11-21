@@ -47,79 +47,79 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="border-2 hover:border-primary transition-all duration-300">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-sm font-medium">Total Documents</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">
-              {stats?.documents?.total || 0}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Indexed in the system
-            </p>
-          </CardContent>
-        </Card>
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm font-medium">Total Documents</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold">
+                {stats?.documents?.total || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Indexed in the system
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card className="border-2 hover:border-primary transition-colors">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-sm font-medium">Chunks Indexed</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold">
-              {stats?.documents?.totalChunks || 0}
-            </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Text segments processed
-            </p>
-          </CardContent>
-        </Card>
+          <Card className="border-2 hover:border-primary transition-colors">
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm font-medium">Chunks Indexed</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold">
+                {stats?.documents?.totalChunks || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Text segments processed
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card className="border-2 hover:border-primary transition-colors">
-          <CardHeader className="pb-3">
-            <CardDescription className="text-sm font-medium">Similarity Checks</CardDescription>
+          <Card className="border-2 hover:border-primary transition-colors">
+            <CardHeader className="pb-3">
+              <CardDescription className="text-sm font-medium">Similarity Checks</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold">
+                {stats?.similarityChecks?.total || 0}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Comparisons performed
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+            <CardDescription>
+              Latest system activity and document processing
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold">
-              {stats?.similarityChecks?.total || 0}
+            <div className="space-y-1">
+              {stats?.recentActivity?.slice(0, 5).map((activity: { name: string; timestamp: string; type: string }, index: number) => (
+                <div key={index}>
+                  <div className="flex items-center justify-between py-3">
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col">
+                        <span className="font-medium text-sm">{activity.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(activity.timestamp).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+                    <Badge variant="secondary" className="font-normal">
+                      {activity.type}
+                    </Badge>
+                  </div>
+                  {index < 4 && <Separator />}
+                </div>
+              ))}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Comparisons performed
-            </p>
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
-          <CardDescription>
-            Latest system activity and document processing
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-1">
-            {stats?.recentActivity?.slice(0, 5).map((activity: any, index: number) => (
-              <div key={index}>
-                <div className="flex items-center justify-between py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex flex-col">
-                      <span className="font-medium text-sm">{activity.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(activity.timestamp).toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
-                  <Badge variant="secondary" className="font-normal">
-                    {activity.type}
-                  </Badge>
-                </div>
-                {index < 4 && <Separator />}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
     </PageTransition>
   )
 }

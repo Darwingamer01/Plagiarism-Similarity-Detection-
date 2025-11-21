@@ -35,6 +35,7 @@ export default function CompleteRegistrationPage() {
       toast.success('Registration complete!')
       navigate('/dashboard')
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       toast.error(error.response?.data?.error?.message || 'Registration failed')
     },

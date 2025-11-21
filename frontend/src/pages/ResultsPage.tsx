@@ -68,6 +68,7 @@ export default function ResultsPage() {
           {data.results?.similar_documents?.length > 0 ? (
             <div className="space-y-6">
               <h3 className="font-semibold text-lg">Similar Documents Found:</h3>
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {data.results.similar_documents.map((doc: any, index: number) => (
                 <Card key={index} className="border shadow-sm">
                   <CardContent className="p-4">
@@ -82,6 +83,7 @@ export default function ResultsPage() {
                     </p>
                     {doc.matches && doc.matches.length > 0 && (
                       <div className="mt-4 space-y-3">
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                         {doc.matches.slice(0, 3).map((match: any, matchIndex: number) => (
                           <div key={matchIndex} className="bg-muted/50 p-3 rounded text-sm">
                             <div className="text-foreground">

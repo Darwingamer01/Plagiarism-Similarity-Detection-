@@ -39,6 +39,7 @@ export default function DocumentsPage() {
       queryClient.invalidateQueries({ queryKey: ['documents'] })
       queryClient.invalidateQueries({ queryKey: ['stats'] })
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       toast.error(error.response?.data?.error?.message || 'Delete failed')
     },
@@ -51,6 +52,7 @@ export default function DocumentsPage() {
       queryClient.invalidateQueries({ queryKey: ['documents'] })
       queryClient.invalidateQueries({ queryKey: ['stats'] })
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       toast.error(error.response?.data?.error?.message || 'Delete all failed')
     },
@@ -78,194 +80,195 @@ export default function DocumentsPage() {
         </div>
 
         <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Document Library
-              </CardTitle>
-              <CardDescription>
-                {data?.pagination.total || 0} documents indexed
-              </CardDescription>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Document Library
+                </CardTitle>
+                <CardDescription>
+                  {data?.pagination.total || 0} documents indexed
+                </CardDescription>
+              </div>
+              {documents.length > 0 && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" size="sm" disabled={deleteAllMutation.isPending}>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete All
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete All Documents?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete all {data?.pagination.total || 0} document(s) from your library.
+                        This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteAllMutation.mutate()}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        {deleteAllMutation.isPending ? 'Deleting...' : 'Delete All'}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
             </div>
-            {documents.length > 0 && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="sm" disabled={deleteAllMutation.isPending}>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete All
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete All Documents?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This will permanently delete all {data?.pagination.total || 0} document(s) from your library. 
-                      This action cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => deleteAllMutation.mutate()}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      {deleteAllMutation.isPending ? 'Deleting...' : 'Delete All'}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <Skeleton key={i} className="h-16 w-full" />
-              ))}
-            </div>
-          ) : (
-            <>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="hover:bg-transparent">
-                      <TableHead className="font-semibold">Filename</TableHead>
-                      <TableHead className="font-semibold">Type</TableHead>
-                      <TableHead className="font-semibold">Size</TableHead>
-                      <TableHead className="font-semibold">Chunks</TableHead>
-                      <TableHead className="font-semibold">Status</TableHead>
-                      <TableHead className="font-semibold">Date</TableHead>
-                      <TableHead className="text-right font-semibold">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {!documents || documents.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={7} className="h-24 text-center">
-                          <div className="flex flex-col items-center justify-center text-muted-foreground">
-                            <FileText className="h-12 w-12 mb-2 opacity-20" />
-                            <p>No documents found</p>
-                          </div>
-                        </TableCell>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-16 w-full" />
+                ))}
+              </div>
+            ) : (
+              <>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="font-semibold">Filename</TableHead>
+                        <TableHead className="font-semibold">Type</TableHead>
+                        <TableHead className="font-semibold">Size</TableHead>
+                        <TableHead className="font-semibold">Chunks</TableHead>
+                        <TableHead className="font-semibold">Status</TableHead>
+                        <TableHead className="font-semibold">Date</TableHead>
+                        <TableHead className="text-right font-semibold">Actions</TableHead>
                       </TableRow>
-                    ) : (
-                      documents.map((doc: any, index: number) => (
-                        <TableRow 
-                          key={doc.id} 
-                          className="animate-fade-in transition-colors hover:bg-muted/50"
-                          style={{ animationDelay: `${index * 50}ms` }}
-                        >
-                          <TableCell className="font-medium">{doc.filename}</TableCell>
-                          <TableCell className="text-muted-foreground">{doc.fileType}</TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {(doc.fileSize / 1024).toFixed(2)} KB
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{doc.chunksCount}</TableCell>
-                          <TableCell>
-                            <Badge variant={getStatusBadge(doc.status)} className="font-normal">
-                              {doc.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {new Date(doc.createdAt).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Delete Document</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Are you sure you want to delete "{doc.filename}"? This action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => deleteMutation.mutate(doc.id)}
-                                    className="bg-destructive hover:bg-destructive/90"
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                    </TableHeader>
+                    <TableBody>
+                      {!documents || documents.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="h-24 text-center">
+                            <div className="flex flex-col items-center justify-center text-muted-foreground">
+                              <FileText className="h-12 w-12 mb-2 opacity-20" />
+                              <p>No documents found</p>
+                            </div>
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {data && data.pagination.totalPages > 1 && (
-                <div className="p-4 border-t">
-                  <Pagination>
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          onClick={() => setPage(Math.max(1, page - 1))}
-                          className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-
-                      {Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1).map((p) => {
-                        // Show first page, last page, current page, and pages around current
-                        if (
-                          p === 1 ||
-                          p === data.pagination.totalPages ||
-                          (p >= page - 1 && p <= page + 1)
-                        ) {
-                          return (
-                            <PaginationItem key={p}>
-                              <PaginationLink
-                                isActive={page === p}
-                                onClick={() => setPage(p)}
-                                className="cursor-pointer"
-                              >
-                                {p}
-                              </PaginationLink>
-                            </PaginationItem>
-                          )
-                        }
-
-                        // Show ellipsis
-                        if (
-                          (p === page - 2 && p > 1) ||
-                          (p === page + 2 && p < data.pagination.totalPages)
-                        ) {
-                          return (
-                            <PaginationItem key={p}>
-                              <PaginationEllipsis />
-                            </PaginationItem>
-                          )
-                        }
-
-                        return null
-                      })}
-
-                      <PaginationItem>
-                        <PaginationNext
-                          onClick={() => setPage(Math.min(data.pagination.totalPages, page + 1))}
-                          className={page === data.pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+                      ) : (
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        documents.map((doc: any, index: number) => (
+                          <TableRow
+                            key={doc.id}
+                            className="animate-fade-in transition-colors hover:bg-muted/50"
+                            style={{ animationDelay: `${index * 50}ms` }}
+                          >
+                            <TableCell className="font-medium">{doc.filename}</TableCell>
+                            <TableCell className="text-muted-foreground">{doc.fileType}</TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {(doc.fileSize / 1024).toFixed(2)} KB
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">{doc.chunksCount}</TableCell>
+                            <TableCell>
+                              <Badge variant={getStatusBadge(doc.status)} className="font-normal">
+                                {doc.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {new Date(doc.createdAt).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Document</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "{doc.filename}"? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => deleteMutation.mutate(doc.id)}
+                                      className="bg-destructive hover:bg-destructive/90"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+
+                {data && data.pagination.totalPages > 1 && (
+                  <div className="p-4 border-t">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => setPage(Math.max(1, page - 1))}
+                            className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+
+                        {Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1).map((p) => {
+                          // Show first page, last page, current page, and pages around current
+                          if (
+                            p === 1 ||
+                            p === data.pagination.totalPages ||
+                            (p >= page - 1 && p <= page + 1)
+                          ) {
+                            return (
+                              <PaginationItem key={p}>
+                                <PaginationLink
+                                  isActive={page === p}
+                                  onClick={() => setPage(p)}
+                                  className="cursor-pointer"
+                                >
+                                  {p}
+                                </PaginationLink>
+                              </PaginationItem>
+                            )
+                          }
+
+                          // Show ellipsis
+                          if (
+                            (p === page - 2 && p > 1) ||
+                            (p === page + 2 && p < data.pagination.totalPages)
+                          ) {
+                            return (
+                              <PaginationItem key={p}>
+                                <PaginationEllipsis />
+                              </PaginationItem>
+                            )
+                          }
+
+                          return null
+                        })}
+
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => setPage(Math.min(data.pagination.totalPages, page + 1))}
+                            className={page === data.pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </PageTransition>
   )
 }

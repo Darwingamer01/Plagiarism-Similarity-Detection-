@@ -29,6 +29,7 @@ export default function SetPasswordPage() {
             }
             navigate('/')
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
             toast.error(error.response?.data?.error?.message || 'Failed to set password')
         },

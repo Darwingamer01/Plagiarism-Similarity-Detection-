@@ -1,5 +1,5 @@
 import api from './api'
-import { LoginRequest, RegisterRequest, User, AuthTokens } from '../types'
+import { LoginRequest, RegisterRequest, User, AuthTokens, OAuthLoginResponse } from '../types'
 
 export const authService = {
   async login(data: LoginRequest): Promise<{ tokens: AuthTokens; user: User }> {
@@ -60,7 +60,7 @@ export const authService = {
     return response.data.data.apiKey
   },
 
-  async googleLogin(token: string): Promise<{ isNewUser: boolean; data: any }> {
+  async googleLogin(token: string): Promise<OAuthLoginResponse> {
     const response = await api.post('/auth/google', { token })
     return {
       isNewUser: response.data.data.isNewUser,
@@ -68,7 +68,7 @@ export const authService = {
     }
   },
 
-  async appleLogin(identityToken: string): Promise<{ isNewUser: boolean; data: any }> {
+  async appleLogin(identityToken: string): Promise<OAuthLoginResponse> {
     const response = await api.post('/auth/apple', { identityToken })
     return {
       isNewUser: response.data.data.isNewUser,
