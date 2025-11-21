@@ -1,0 +1,8 @@
+# Placeholder file for SSL certificates
+# Generate SSL certificates and place them here for HTTPS support
+
+# For development, you can generate self-signed certificates:
+# openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+#   -keyout cert.key -out cert.crt
+
+# For production, use Let's Encrypt or other CA-signed certificates

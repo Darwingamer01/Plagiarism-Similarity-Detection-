@@ -1,0 +1,144 @@
+version: '3.8'
+
+services:
+  # Frontend - React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8000
+        - VITE_GOOGLE_CLIENT_ID=39786326942-fc1li0kuef3djvu9jq7t67umu6j4s4hd.apps.googleusercontent.com
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - VITE_GOOGLE_CLIENT_ID=39786326942-fc1li0kuef3djvu9jq7t67umu6j4s4hd.apps.googleusercontent.com
+    depends_on:
+      - backend
+    networks:
+      - plagiarism-network
+    restart: unless-stopped
+
+  # Backend - Node.js API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://plagiarism_user:plagiarism_pass_2024@postgres:5432/plagiarism_db
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - AI_SERVICE_URL=http://ai-service:8001
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production-min-32-chars
+      - JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-in-production-min-32-chars
+      - PORT=8000
+      - UPLOAD_DIR=/app/uploads
+      - MAX_FILE_SIZE=5242880
+      - GOOGLE_CLIENT_ID=39786326942-fc1li0kuef3djvu9jq7t67umu6j4s4hd.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+    depends_on:
+      - postgres
+      - redis
+      - ai-service
+    networks:
+      - plagiarism-network
+    volumes:
+      - backend-uploads:/app/uploads
+    restart: unless-stopped
+
+  # AI Service - Python Microservice
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+      - DATA_DIR=/app/data
+      - CHUNK_SIZE=300
+      - CHUNK_OVERLAP=50
+    volumes:
+      - ai-data:/app/data
+    networks:
+      - plagiarism-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=plagiarism_user
+      - POSTGRES_PASSWORD=plagiarism_pass_2024
+      - POSTGRES_DB=plagiarism_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - plagiarism-network
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plagiarism_user -d plagiarism_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - plagiarism-network
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # nginx Reverse Proxy (Production)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - plagiarism-network
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+    driver: local
+  redis-data:
+    driver: local
+  ai-data:
+    driver: local
+  backend-uploads:
+    driver: local
+
+networks:
+  plagiarism-network:
+    driver: bridge
