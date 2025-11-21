@@ -61,11 +61,17 @@ export const authService = {
   },
 
   async googleLogin(token: string): Promise<OAuthLoginResponse> {
-    const response = await api.post('/auth/google', { token })
+    const response = await api.post('/auth/google', { token });
+    // Flatten the nested response for frontend compatibility
+    const raw = response.data.data;
     return {
-      isNewUser: response.data.data.isNewUser,
-      data: response.data.data,
-    }
+      isNewUser: raw.isNewUser,
+      data: {
+        user: raw.data?.user,
+        tokens: raw.data?.tokens,
+        profile: raw.data?.profile,
+      },
+    };
   },
 
   async appleLogin(identityToken: string): Promise<OAuthLoginResponse> {

@@ -1,3 +1,6 @@
+// Removed unused import
+
+// Removed unused GoogleLoginResponse type
 // Type guard for error with response structure
 function isAxiosErrorWithMessage(error: unknown): error is { response: { data: { error?: { message?: string } } } } {
   return (
@@ -20,7 +23,7 @@ import { Input } from '../components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card'
 import { Label } from '../components/ui/label'
 import { Separator } from '../components/ui/separator'
-import { Shield, Eye, EyeOff, User, X } from 'lucide-react'
+import { Shield, Eye, EyeOff, User as UserIcon, X } from 'lucide-react'
 import { Checkbox } from '../components/ui/checkbox'
 import { motion } from 'framer-motion'
 
@@ -96,10 +99,11 @@ export default function LoginPage() {
   const googleLoginMutation = useMutation({
     mutationFn: (token: string) => authService.googleLogin(token),
     onSuccess: (result) => {
-      const payload = result.data;
-      if (payload.isNewUser) {
-        // Redirect to complete registration
-        const profile = payload.data?.profile;
+      console.log('Google login mutation result:', result);
+      // The backend response is nested: result.data.data.user, result.data.data.tokens
+      const data = result.data;
+      if (result.isNewUser) {
+        const profile = data?.profile;
         navigate('/complete-registration', {
           state: {
             oauthData: {
@@ -110,21 +114,16 @@ export default function LoginPage() {
             }
           }
         });
+        return;
+      }
+      if (data && data.user && data.tokens?.accessToken && data.tokens?.refreshToken) {
+        setUser(data.user);
+        setTokens(data.tokens.accessToken, data.tokens.refreshToken);
+        toast.success('Login successful!');
+        navigate('/dashboard');
       } else {
-        // Login successful
-        if (
-          payload.data?.user &&
-          payload.data?.tokens?.accessToken &&
-          payload.data?.tokens?.refreshToken
-        ) {
-          setUser(payload.data.user);
-          setTokens(payload.data.tokens.accessToken, payload.data.tokens.refreshToken);
-          toast.success('Login successful!');
-          navigate('/dashboard');
-        } else {
-          toast.error('Invalid login response from server.');
-          console.log('Google login response:', result);
-        }
+        toast.error('Invalid login response from server.');
+        console.log('Google login response:', result);
       }
     },
     onError: (error: unknown) => {
@@ -238,7 +237,7 @@ const handleGoogleLogin = () => {
                         >
                           <div className="flex items-center gap-3 overflow-hidden">
                             <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                              <User className="h-4 w-4 text-primary" />
+                              <UserIcon className="h-4 w-4 text-primary" />
                             </div>
                             <div className="flex flex-col overflow-hidden">
                               <span className="text-sm font-medium truncate">{account.email}</span>
