@@ -39,4 +39,18 @@ router.post('/change-password', authenticate, userController.changePassword.bind
  */
 router.post('/set-password', authenticate, userController.setPassword.bind(userController));
 
+/**
+ * @route   GET /api/users/threshold
+ * @desc    Get similarity threshold for current user
+ * @access  Private
+ */
+router.get('/threshold', authenticate, userController.getThreshold.bind(userController));
+
+/**
+ * @route   PUT /api/users/threshold
+ * @desc    Set similarity threshold for current user
+ * @access  Private
+ */
+router.put('/threshold', authenticate, userController.setThreshold.bind(userController));
+
 export default router;

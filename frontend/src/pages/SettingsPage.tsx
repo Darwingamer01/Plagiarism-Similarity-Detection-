@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
@@ -22,6 +22,16 @@ export default function SettingsPage() {
   // Threshold state (default 0.88)
   const [threshold, setThreshold] = useState(0.88)
   const [thresholdSaved, setThresholdSaved] = useState(false)
+  const [thresholdLoading, setThresholdLoading] = useState(true)
+    // Fetch threshold on mount
+    useEffect(() => {
+      userService.getThreshold().then((t) => {
+        setThreshold(t)
+        setThresholdLoading(false)
+      }).catch(() => {
+        setThresholdLoading(false)
+      })
+    }, [])
   const navigate = useNavigate()
   const { user, setUser } = useAuthStore()
   const [isEditing, setIsEditing] = useState(false)
@@ -98,11 +108,16 @@ export default function SettingsPage() {
     toast.success('API key copied to clipboard!')
   }
 
-  // Handler for saving threshold (could be extended to persist to backend)
-  const handleThresholdSave = () => {
-    setThresholdSaved(true)
-    setTimeout(() => setThresholdSaved(false), 2000)
-    toast.success('Threshold updated!')
+  // Handler for saving threshold to backend
+  const handleThresholdSave = async () => {
+    try {
+      await userService.setThreshold(threshold)
+      setThresholdSaved(true)
+      setTimeout(() => setThresholdSaved(false), 2000)
+      toast.success('Threshold updated!')
+    } catch {
+      toast.error('Failed to update threshold')
+    }
   }
 
   return (
@@ -189,26 +204,32 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Threshold</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="range"
-                  min={0.5}
-                  max={0.99}
-                  step={0.01}
-                  value={threshold}
-                  onChange={e => setThreshold(Number(e.target.value))}
-                  className="w-48"
-                />
-                <span className="font-semibold text-primary">{(threshold * 100).toFixed(0)}%</span>
-              </div>
-              <Button size="sm" className="mt-2 w-fit" onClick={handleThresholdSave}>Save Threshold</Button>
-              {thresholdSaved && <span className="text-green-600 text-sm">Saved!</span>}
-            </div>
-            <div className="mt-2 text-sm text-muted-foreground">
-              <strong>What is threshold?</strong> The threshold determines how strict the similarity detection is. A higher threshold (e.g. 95%) means only very similar documents will be flagged, while a lower threshold (e.g. 70%) will flag more loosely related content. Adjust this to balance sensitivity and specificity for your use case.
-            </div>
+            {thresholdLoading ? (
+              <div className="text-muted-foreground">Loading threshold...</div>
+            ) : (
+              <>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium">Threshold</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="range"
+                      min={0.5}
+                      max={0.99}
+                      step={0.01}
+                      value={threshold}
+                      onChange={e => setThreshold(Number(e.target.value))}
+                      className="w-48"
+                    />
+                    <span className="font-semibold text-primary">{(threshold * 100).toFixed(0)}%</span>
+                  </div>
+                  <Button size="sm" className="mt-2 w-fit" onClick={handleThresholdSave}>Save Threshold</Button>
+                  {thresholdSaved && <span className="text-green-600 text-sm">Saved!</span>}
+                </div>
+                <div className="mt-2 text-sm text-muted-foreground">
+                  <strong>What is threshold?</strong> The threshold determines how strict the similarity detection is. A higher threshold (e.g. 95%) means only very similar documents will be flagged, while a lower threshold (e.g. 70%) will flag more loosely related content. Adjust this to balance sensitivity and specificity for your use case.
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
 

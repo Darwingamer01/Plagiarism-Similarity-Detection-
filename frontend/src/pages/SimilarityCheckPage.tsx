@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { userService } from '../services/userService'
 import { useNavigate } from 'react-router-dom'
 import { useDropzone } from 'react-dropzone'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -17,7 +18,16 @@ export default function SimilarityCheckPage() {
   const queryClient = useQueryClient()
 
   const checkMutation = useMutation({
-    mutationFn: () => similarityService.checkSimilarity(file!, 0.88, 5),
+    mutationFn: async () => {
+      // Fetch threshold from backend
+      let threshold = 0.88;
+      try {
+        threshold = await userService.getThreshold();
+      } catch {
+        // fallback to default
+      }
+      return similarityService.checkSimilarity(file!, threshold, 5);
+    },
     onSuccess: (data) => {
       toast.success('Similarity check completed!')
       // Invalidate queries to refresh data

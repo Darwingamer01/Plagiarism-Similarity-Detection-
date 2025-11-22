@@ -1,4 +1,5 @@
 import express, { Application } from 'express';
+import { userService } from './services/userService';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -23,6 +24,7 @@ dotenv.config();
 
 
 const app: Application = express();
+app.locals.userService = userService;
 // Trust first proxy (for Railway, Vercel, etc.)
 app.set('trust proxy', 1);
 

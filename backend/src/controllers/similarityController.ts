@@ -37,10 +37,17 @@ export class SimilarityController {
         });
       }
 
+
+      // If threshold is not provided, fetch from user profile
+      let threshold = value.threshold;
+      if (threshold == null || typeof threshold === 'undefined') {
+        threshold = await req.app.locals.userService.getThreshold(req.user.id);
+      }
+
       const result = await similarityService.checkSimilarity(
         req.file,
         req.user.id,
-        value.threshold,
+        threshold,
         value.topK
       );
 

@@ -1,6 +1,21 @@
 import api from './api'
 
 export const userService = {
+        /**
+         * Get similarity threshold for current user
+         */
+        async getThreshold() {
+            const response = await api.get('/users/threshold');
+            return response.data.data.threshold;
+        },
+
+        /**
+         * Set similarity threshold for current user
+         */
+        async setThreshold(threshold: number) {
+            const response = await api.put('/users/threshold', { threshold });
+            return response.data.data.threshold;
+        },
     /**
      * Update user profile (name only)
      */
@@ -40,4 +55,5 @@ export const userService = {
         const response = await api.post('/users/set-password', data)
         return response.data.data
     },
+
 }

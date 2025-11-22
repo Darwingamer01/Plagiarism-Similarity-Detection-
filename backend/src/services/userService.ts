@@ -6,6 +6,33 @@ import bcrypt from 'bcrypt';
 import { config } from '../config/environment';
 
 export class UserService {
+        /**
+     * Get similarity threshold for a user
+     */
+    async getThreshold(userId: string): Promise<number> {
+        const result = await db.query(
+            'SELECT similarity_threshold FROM users WHERE id = $1',
+            [userId]
+        );
+        if (result.rows.length === 0 || result.rows[0].similarity_threshold == null) {
+            return 0.88;
+        }
+        return parseFloat(result.rows[0].similarity_threshold);
+    }
+
+    /**
+     * Set similarity threshold for a user
+     */
+    async setThreshold(userId: string, threshold: number): Promise<number> {
+        const result = await db.query(
+            'UPDATE users SET similarity_threshold = $1 WHERE id = $2 RETURNING similarity_threshold',
+            [threshold, userId]
+        );
+        if (result.rows.length === 0) {
+            throw new AppError('User not found', 404);
+        }
+        return parseFloat(result.rows[0].similarity_threshold);
+    }
     /**
      * Update user profile (name only)
      */
