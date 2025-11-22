@@ -1,3 +1,15 @@
+# Email OTP Setup
+
+To enable OTP email delivery, add these lines to your `backend/.env` file:
+
+```
+GMAIL_USER=utkarsh11980@gmail.com
+GMAIL_PASS=your-app-password
+```
+
+Use a Gmail App Password (see Google Account > Security > App Passwords) for `GMAIL_PASS`.
+
+Restart the backend server after updating `.env`.
 # AI-Powered Plagiarism Detection System
 
 ## 🌐 Hosted Project
@@ -11,7 +23,7 @@ A comprehensive, full-stack plagiarism detection solution that leverages advance
 
 ### Authentication & User Management
 - **Secure Authentication**: Email/Password login with JWT (Access & Refresh Tokens).
-- **OAuth Integration**: One-click login/register with **Google** and **Apple**.
+- **OAuth Integration**: One-click login/register with **Google**.
 - **Email Verification**: OTP-based email verification for new accounts.
 - **Password Management**: Forgot Password, Reset Password, and Change Password flows.
 - **Profile Management**: Update profile details and manage API keys.
@@ -181,6 +193,19 @@ npm install
 npm run dev
 ```
 *Frontend runs on port 5173 (or 3000 if configured).*
+
+#### 5. Email OTP Setup
+
+To enable OTP email delivery, add these lines to your `backend/.env` file:
+
+```
+GMAIL_USER=your-email-ID
+GMAIL_PASS=your-app-password
+```
+
+Use a Gmail App Password (see Google Account > Security > App Passwords) for `GMAIL_PASS`.
+
+Restart the backend server after updating `.env`.
 
 ---
 
