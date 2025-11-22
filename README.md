@@ -1,15 +1,3 @@
-# Email OTP Setup
-
-To enable OTP email delivery, add these lines to your `backend/.env` file:
-
-```
-GMAIL_USER=utkarsh11980@gmail.com
-GMAIL_PASS=your-app-password
-```
-
-Use a Gmail App Password (see Google Account > Security > App Passwords) for `GMAIL_PASS`.
-
-Restart the backend server after updating `.env`.
 # AI-Powered Plagiarism Detection System
 
 ## 🌐 Hosted Project
