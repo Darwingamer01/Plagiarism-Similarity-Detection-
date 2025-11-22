@@ -76,19 +76,39 @@ export class EmailService {
     }
 
     async sendEmailChangeOTP(email: string, otp: string) {
-        logger.info('=================================================================');
-        logger.info(`📧 EMAIL MOCK: Email Change Verification`);
-        logger.info(`To: ${email}`);
-        logger.info(`Subject: Verify Your New Email Address`);
-        logger.info(`Body:`);
-        logger.info(`Hello,`);
-        logger.info(`You requested to change your email address. Please use the following OTP to verify your new email:`);
-        logger.info(`OTP: ${otp}`);
-        logger.info(`This code will expire in 10 minutes.`);
-        logger.info(`If you didn't request this, please ignore this email.`);
-        logger.info('=================================================================');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
-        return true;
+        const msg = {
+            to: email,
+            from: {
+                email: process.env.SENDGRID_SENDER_EMAIL as string,
+                name: 'Plagiarism Detection'
+            },
+            subject: 'Verify Your New Email Address',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 400px; margin: auto; border: 1px solid #eee; border-radius: 8px; padding: 24px; background: #fafafa;">
+                    <h2 style="text-align:center; color:#333;">Email Change Verification</h2>
+                    <p>Hello,</p>
+                    <p>You requested to change your email address. Please use the following OTP to verify your new email:</p>
+                    <div style="display:flex; justify-content:center; margin: 24px 0;">
+                        <div style="background:#f0f4ff; border:2px solid #4f8cff; border-radius:8px; padding:16px 32px; font-size:2em; font-weight:bold; color:#1a237e; letter-spacing:4px; text-align:center;">
+                            ${otp}
+                        </div>
+                    </div>
+                    <p style="text-align:center; color:#888;">This code will expire in 10 minutes.</p>
+                    <p style="text-align:center; color:#888; font-size:0.95em;">If you didn't request this, please ignore this email.</p>
+                </div>
+            `,
+        };
+
+        try {
+            await sgMail.send(msg);
+            logger.info(`Email change OTP sent to ${email}`);
+            return true;
+        } catch (error) {
+            logger.error(`Failed to send email change OTP: ${error}`);
+            return false;
+        }
     }
 }
 
