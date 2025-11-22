@@ -1,5 +1,10 @@
 # AI-Powered Plagiarism Detection System
 
+## 🌐 Hosted Project
+
+[Live Demo](https://plagiarism-similarity-detection.vercel.app/)
+
+
 A comprehensive, full-stack plagiarism detection solution that leverages advanced AI to compare documents and detect similarities. Built with a modern tech stack including React, Node.js, Python, and Docker.
 
 ## 🚀 Features
@@ -27,7 +32,6 @@ A comprehensive, full-stack plagiarism detection solution that leverages advance
 - **Rate Limiting**: Protection against API abuse.
 - **Audit Logging**: Comprehensive logs for security and debugging.
 
----
 
 ## 🛠️ Tech Stack
 
@@ -83,6 +87,20 @@ Understanding the codebase structure will help you navigate and contribute effec
 ├── nginx/               # Nginx configuration for production
 └── docker-compose.yml   # Docker orchestration configuration
 ```
+
+### 📁 Script Location Update
+
+All utility scripts (`.bat`, `.ps1`, `.sql`) are now located in the `scripts/` folder at the project root. To run any script, use the path `scripts/<script-name>` instead of the root folder.
+
+**Example:**
+
+```bash
+scripts/clear-all-data.bat
+scripts/clear-users.bat
+scripts/clear-database.sql
+```
+
+This change helps keep the project organized. Update any custom commands or documentation to use the new path.
 
 ---
 
