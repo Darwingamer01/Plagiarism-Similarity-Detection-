@@ -1,4 +1,18 @@
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+@app.get("/admin/clear-index")
+async def clear_index_get():
+    """
+    Admin GET endpoint to clear the FAISS index and metadata.
+    """
+    try:
+        similarity_checker.index = similarity_checker.__class__().index
+        similarity_checker.metadata = []
+        similarity_checker.save_index()
+        logger.info("🧹 FAISS index and metadata cleared by admin GET endpoint.")
+        return {"success": True, "message": "FAISS index and metadata cleared."}
+    except Exception as e:
+        logger.error(f"❌ Error clearing FAISS index: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to clear FAISS index: {str(e)}")
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
@@ -30,9 +44,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize processors
 document_processor = DocumentProcessor()
 similarity_checker = SimilarityChecker()
+@app.post("/admin/clear-index", status_code=status.HTTP_200_OK)
+async def clear_index():
+    """
+    Admin endpoint to clear the FAISS index and metadata.
+    """
+    try:
+        # Re-initialize the index and metadata
+        similarity_checker.index = similarity_checker.__class__().index
+        similarity_checker.metadata = []
+        # Save the cleared index to disk
+        similarity_checker.save_index()
+        logger.info("🧹 FAISS index and metadata cleared by admin endpoint.")
+        return {"success": True, "message": "FAISS index and metadata cleared."}
+    except Exception as e:
+        logger.error(f"❌ Error clearing FAISS index: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to clear FAISS index: {str(e)}")
 
 @app.on_event("startup")
 async def startup_event():
