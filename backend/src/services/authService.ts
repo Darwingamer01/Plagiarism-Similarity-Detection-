@@ -293,14 +293,9 @@ export class AuthService {
     // Store in Redis with 1 hour expiration
     await redis.set(`reset_token:${resetToken}`, user.id, 60 * 60);
 
-    // Create reset link
-    // Assuming frontend is running on port 5173 (Vite default) or configured URL
-    const frontendUrl = process.env.FRONTEND_URL;
-    const resetLink = `${frontendUrl}/reset-password?token=${resetToken}`;
-
     // Send email
     const { emailService } = await import('./emailService');
-    await emailService.sendResetPasswordEmail(user.email, resetLink);
+    await emailService.sendResetPasswordEmail(user.email, resetToken);
 
     logger.info(`Password reset requested for: ${email}`);
   }
