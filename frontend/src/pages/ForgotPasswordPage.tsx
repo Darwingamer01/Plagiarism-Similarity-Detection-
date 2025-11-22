@@ -45,7 +45,7 @@ export default function ForgotPasswordPage() {
                         <CardTitle className="text-2xl font-bold">Forgot password?</CardTitle>
                         <CardDescription>
                             {isSubmitted
-                                ? 'Check your email for the reset link'
+                                ? 'Check your email (and spam folder) for the reset link'
                                 : 'Enter your email address and we\'ll send you a link to reset your password'}
                         </CardDescription>
                     </CardHeader>
@@ -54,7 +54,8 @@ export default function ForgotPasswordPage() {
                         <CardContent className="space-y-4">
                             <div className="bg-muted/50 p-4 rounded-lg text-sm text-center">
                                 We have sent a password reset link to <strong>{email}</strong>.
-                                Please check your email inbox and spam folder.
+                                <br />
+                                Please check your email inbox. <strong>Also check your spam folder.</strong>
                             </div>
                             <Button
                                 variant="outline"

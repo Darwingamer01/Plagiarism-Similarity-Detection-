@@ -80,7 +80,9 @@ export default function VerifyEmailOTPPage() {
                     <h2 className="text-3xl font-bold text-gray-900">Verify Your Email</h2>
                     <p className="mt-2 text-sm text-gray-600">
                         We've sent a 6-digit verification code to{' '}
-                        <span className="font-semibold">{pendingEmail}</span>
+                        <span className="font-semibold">{pendingEmail}</span>.
+                        <br />
+                        Please check your spam folder as well.
                     </p>
                 </div>
 
