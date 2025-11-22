@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { cn } from '../../lib/utils'
 import { LayoutDashboard, Upload, FileText, Search, History, Settings, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Separator } from '../ui/separator'
@@ -20,6 +20,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
+  const location = useLocation()
   return (
     <aside
       className={cn(
@@ -47,48 +48,41 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
           <nav className="space-y-1">
             {navItems.map((item, index) => {
               const Icon = item.icon
+              const isActive = location.pathname === item.path
+              const linkClass = cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
+                isActive
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                  : 'text-gray-600 hover:text-foreground hover:bg-gray-100',
+                isCollapsed && "justify-center px-2 bg-gray-50/50"
+              )
+
               return (
                 <div key={item.path}>
                   {isCollapsed ? (
                     <Tooltip delayDuration={0}>
                       <TooltipTrigger asChild>
-                        <NavLink
+                        <Link
                           to={item.path}
-                          className={({ isActive }) =>
-                            cn(
-                              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
-                              isActive
-                                ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
-                                : 'text-gray-600 hover:text-foreground hover:bg-gray-100',
-                              isCollapsed && "justify-center px-2 bg-gray-50/50"
-                            )
-                          }
+                          className={linkClass}
                         >
                           <Icon className="h-5 w-5 shrink-0" />
-                        </NavLink>
+                        </Link>
                       </TooltipTrigger>
                       <TooltipContent side="right">
                         <p>{item.label}</p>
                       </TooltipContent>
                     </Tooltip>
                   ) : (
-                    <NavLink
+                    <Link
                       to={item.path}
-                      className={({ isActive }) =>
-                        cn(
-                          'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
-                          isActive
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
-                            : 'text-gray-600 hover:text-foreground hover:bg-gray-100',
-                          isCollapsed && "justify-center px-2"
-                        )
-                      }
+                      className={linkClass}
                     >
                       <Icon className="h-5 w-5 shrink-0" />
                       <span className="truncate transition-opacity duration-300">
                         {item.label}
                       </span>
-                    </NavLink>
+                    </Link>
                   )}
                   {index === 2 && <Separator className="my-3" />}
                 </div>
@@ -104,7 +98,7 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
               isCollapsed && "p-2 flex justify-center"
             )}
           >
-            <NavLink to="/documentation" className={cn("flex items-center", isCollapsed && "justify-center")}>
+            <Link to="/documentation" className={cn("flex items-center", isCollapsed && "justify-center")}>
               {!isCollapsed ? (
                 <div>
                   <p className="text-sm font-medium">Need Help?</p>
@@ -115,7 +109,7 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
               ) : (
                 <span className="text-muted-foreground font-bold text-lg">?</span>
               )}
-            </NavLink>
+            </Link>
           </div>
         </div>
       </div>
