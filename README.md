@@ -59,7 +59,7 @@ A comprehensive, full-stack plagiarism detection solution that leverages advance
 - **Framework**: Express.js
 - **Language**: TypeScript
 - **Database**: PostgreSQL (Primary), Redis (Caching & Session)
-- **Auth**: JWT, Google Auth Library, Apple Sign-In
+- **Auth**: JWT, Google Auth Library
 
 ### AI Service
 - **Language**: Python 3.11
