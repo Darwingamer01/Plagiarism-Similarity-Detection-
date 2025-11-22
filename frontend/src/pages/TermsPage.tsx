@@ -93,7 +93,7 @@ export default function TermsPage() {
 
                         <section className="space-y-4">
                             <h2 className="text-xl font-semibold text-foreground">10. Contact Us</h2>
-                            <p>If you have any questions about these Terms, please contact us at support@plagiarismdetector.com.</p>
+                            <p>If you have any questions about these Terms, please contact us at utkarsh11980@gmail.com.</p>
                         </section>
                     </div>
                 </motion.div>

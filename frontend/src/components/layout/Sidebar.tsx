@@ -3,6 +3,7 @@ import { cn } from '../../lib/utils'
 import { LayoutDashboard, Upload, FileText, Search, History, Settings, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -33,6 +34,7 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
           size="icon"
           onClick={toggleSidebar}
           className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full border shadow-md bg-white z-50 hover:bg-gray-100 p-0"
+          tooltip={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
           {isCollapsed ? (
             <ChevronRight className="h-3 w-3" />
@@ -47,26 +49,47 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
               const Icon = item.icon
               return (
                 <div key={item.path}>
-                  <NavLink
-                    to={item.path}
-                    className={({ isActive }) =>
-                      cn(
-                        'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
-                        isActive
-                          ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                          : 'text-muted-foreground hover:text-foreground',
-                        isCollapsed && "justify-center px-2"
-                      )
-                    }
-                    title={isCollapsed ? item.label : undefined}
-                  >
-                    <Icon className="h-5 w-5 shrink-0" />
-                    {!isCollapsed && (
+                  {isCollapsed ? (
+                    <Tooltip delayDuration={0}>
+                      <TooltipTrigger asChild>
+                        <NavLink
+                          to={item.path}
+                          className={({ isActive }) =>
+                            cn(
+                              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
+                              isActive
+                                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                : 'text-muted-foreground hover:text-foreground',
+                              isCollapsed && "justify-center px-2"
+                            )
+                          }
+                        >
+                          <Icon className="h-5 w-5 shrink-0" />
+                        </NavLink>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">
+                        <p>{item.label}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <NavLink
+                      to={item.path}
+                      className={({ isActive }) =>
+                        cn(
+                          'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
+                          isActive
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                            : 'text-muted-foreground hover:text-foreground',
+                          isCollapsed && "justify-center px-2"
+                        )
+                      }
+                    >
+                      <Icon className="h-5 w-5 shrink-0" />
                       <span className="truncate transition-opacity duration-300">
                         {item.label}
                       </span>
-                    )}
-                  </NavLink>
+                    </NavLink>
+                  )}
                   {index === 2 && <Separator className="my-3" />}
                 </div>
               )

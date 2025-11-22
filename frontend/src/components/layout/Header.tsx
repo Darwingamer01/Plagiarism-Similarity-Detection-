@@ -42,7 +42,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full" tooltip="User Menu">
                 <Avatar className="h-10 w-10 border-2">
                   <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                     {getInitials(user?.fullName || 'User')}

@@ -19,35 +19,39 @@ const queryClient = new QueryClient({
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
 
+import { TooltipProvider } from './components/ui/tooltip'
+
 const AppContent = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <App />
-      <Toaster 
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-          success: {
-            duration: 3000,
-            iconTheme: {
-              primary: '#10b981',
-              secondary: '#fff',
-            },
-          },
-          error: {
+    <TooltipProvider>
+      <BrowserRouter>
+        <App />
+        <Toaster
+          position="top-right"
+          toastOptions={{
             duration: 4000,
-            iconTheme: {
-              primary: '#ef4444',
-              secondary: '#fff',
+            style: {
+              background: '#363636',
+              color: '#fff',
             },
-          },
-        }}
-      />
-    </BrowserRouter>
+            success: {
+              duration: 3000,
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              duration: 4000,
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+      </BrowserRouter>
+    </TooltipProvider>
   </QueryClientProvider>
 )
 

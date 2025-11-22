@@ -34,22 +34,44 @@ const buttonVariants = cva(
   }
 )
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "./tooltip"
+
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  tooltip?: string
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, tooltip, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
-    return (
+    const button = (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         {...props}
       />
     )
+
+    if (tooltip) {
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            {button}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
+      )
+    }
+
+    return button
   }
 )
 Button.displayName = "Button"
