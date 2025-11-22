@@ -169,10 +169,12 @@ export default function SimilarityCheckPage() {
                   </Button>
 
                   <Alert>
-                    <Info className="h-4 w-4" />
-                    <AlertDescription className="text-xs">
-                      Analysis may take 10-30 seconds depending on document size and library complexity.
-                    </AlertDescription>
+                    <div className="flex items-center justify-center gap-2 w-full">
+                      <Info className="h-5 w-5 text-primary" />
+                      <AlertDescription className="text-sm text-center">
+                        Analysis may take 10-30 seconds depending on document size and library complexity.
+                      </AlertDescription>
+                    </div>
                   </Alert>
                 </div>
               </div>
