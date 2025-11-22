@@ -1,10 +1,13 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { similarityService } from '../services/similarityService'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
+import { Skeleton } from '../components/ui/skeleton'
+import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 
 export default function ResultsPage() {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>()
 
   const { data, isLoading } = useQuery({
@@ -14,7 +17,24 @@ export default function ResultsPage() {
   })
 
   if (isLoading) {
-    return <div className="text-center py-8">Loading results...</div>
+    return (
+      <div className="space-y-8">
+        <div className="flex items-center pt-2 pl-4">
+          <Button variant="ghost" size="sm" className="mr-2" onClick={() => navigate(-1)}>
+            ← Back
+          </Button>
+          <div className="ml-4">
+            <h1 className="text-4xl font-bold tracking-tight">Similarity Results</h1>
+            <p className="text-muted-foreground mt-2">Detailed analysis of your document's similarity check</p>
+          </div>
+        </div>
+        <div className="space-y-3 p-6">
+          {[1,2,3,4].map((i) => (
+            <Skeleton key={i} className="h-16 w-full" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   if (!data) {
@@ -40,11 +60,14 @@ export default function ResultsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-4xl font-bold tracking-tight">Similarity Results</h1>
-        <p className="text-muted-foreground mt-2">
-          Detailed analysis of your document's similarity check
-        </p>
+      <div className="flex items-center pt-2 pl-4">
+        <Button variant="ghost" size="sm" className="mr-2" onClick={() => navigate(-1)}>
+          ← Back
+        </Button>
+        <div className="ml-4">
+          <h1 className="text-4xl font-bold tracking-tight">Similarity Results</h1>
+          <p className="text-muted-foreground mt-2">Detailed analysis of your document's similarity check</p>
+        </div>
       </div>
 
       <Card>

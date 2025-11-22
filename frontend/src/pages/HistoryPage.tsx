@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import { similarityService } from '../services/similarityService'
 import { Card, CardContent } from '../components/ui/card'
+import { Skeleton } from '../components/ui/skeleton'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog'
@@ -115,7 +116,11 @@ export default function HistoryPage() {
         <Card>
           <CardContent className="p-0">
             {isLoading ? (
-              <div className="text-center py-8">Loading...</div>
+              <div className="space-y-3 p-6">
+                {[1,2,3,4,5].map((i) => (
+                  <Skeleton key={i} className="h-12 w-full" />
+                ))}
+              </div>
             ) : (
               <>
                 <div className="overflow-x-auto">
