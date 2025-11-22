@@ -84,3 +84,4 @@ nginx/ssl/*.pem
 nginx/ssl/*.key
 nginx/ssl/*.crt
 !nginx/ssl/.gitkeep
+client_secret_39786326942-fc1li0kuef3djvu9jq7t67umu6j4s4hd.apps.googleusercontent.com.json
