@@ -14,7 +14,7 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 border-r bg-background">
+    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 border-r bg-white shadow-sm">
       <div className="flex flex-col h-full">
         <div className="flex-1 overflow-auto py-6 px-4">
           <nav className="space-y-1">
