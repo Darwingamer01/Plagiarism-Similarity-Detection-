@@ -302,7 +302,10 @@ export default function RegisterPage() {
         </motion.div>
 
         <p className="text-center text-sm text-muted-foreground mt-8">
-          By creating an account, you agree to our Terms of Service and Privacy Policy
+          By creating an account, you agree to our{' '}
+          <Link to="/terms" className="font-medium text-foreground hover:underline">
+            Terms of Service and Privacy Policy
+          </Link>
         </p>
       </div>
     </motion.div>

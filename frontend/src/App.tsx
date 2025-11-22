@@ -19,6 +19,8 @@ import ChangePasswordPage from './pages/ChangePasswordPage'
 import SetPasswordPage from './pages/SetPasswordPage'
 import DocumentationPage from './pages/DocumentationPage'
 
+import TermsPage from './pages/TermsPage'
+
 function App() {
   console.log('App component rendering...')
 
@@ -35,6 +37,7 @@ function App() {
         <Route path="/complete-registration" element={!isAuthenticated ? <CompleteRegistrationPage /> : <Navigate to="/dashboard" />} />
         <Route path="/forgot-password" element={!isAuthenticated ? <ForgotPasswordPage /> : <Navigate to="/dashboard" />} />
         <Route path="/reset-password" element={!isAuthenticated ? <ResetPasswordPage /> : <Navigate to="/dashboard" />} />
+        <Route path="/terms" element={<TermsPage />} />
 
         {/* Protected routes */}
         <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
