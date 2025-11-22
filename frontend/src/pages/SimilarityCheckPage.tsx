@@ -109,10 +109,12 @@ export default function SimilarityCheckPage() {
                 </div>
 
                 <Alert>
-                  <Info className="h-4 w-4" />
-                  <AlertDescription className="text-sm">
-                    <strong>Note:</strong> Only one file can be checked at a time. Maximum file size is 5MB.
-                  </AlertDescription>
+                  <div className="flex items-center gap-2">
+                    <Info className="h-4 w-4" />
+                    <AlertDescription className="text-sm">
+                      <strong>Note:</strong> Only one file can be checked at a time. Maximum file size is 5MB.
+                    </AlertDescription>
+                  </div>
                 </Alert>
               </>
             ) : (
