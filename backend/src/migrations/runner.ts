@@ -43,6 +43,12 @@ async function runMigrations() {
     `);
     logger.info('✓ OAuth columns added to users table');
 
+    // Add similarity_threshold column to users table if it doesn't exist
+    await db.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS similarity_threshold NUMERIC(4,2) DEFAULT 0.88;
+    `);
+    logger.info('✓ similarity_threshold column added to users table');
+
     // Create documents table
     await db.query(`
       CREATE TABLE IF NOT EXISTS documents (
