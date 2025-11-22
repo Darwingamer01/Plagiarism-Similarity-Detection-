@@ -19,6 +19,20 @@ export class SimilarityService {
       );
       const totalDocs = parseInt(countResult.rows[0].count);
 
+      if (totalDocs === 0) {
+        // Clean up uploaded file
+        deleteFile(file.path);
+        logger.info('No documents in database to compare to.');
+        return {
+          checkId: null,
+          queryFilename: file.originalname,
+          maxSimilarity: 0,
+          riskLevel: 'N/A',
+          similarDocuments: [],
+          message: 'No documents in database to compare to.'
+        };
+      }
+
       // Set topK to total documents to get ALL comparisons
       const actualTopK = Math.max(totalDocs, topK);
 
