@@ -58,9 +58,9 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
                             cn(
                               'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
                               isActive
-                                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                                : 'text-muted-foreground hover:text-foreground',
-                              isCollapsed && "justify-center px-2"
+                                ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                                : 'text-gray-600 hover:text-foreground hover:bg-gray-100',
+                              isCollapsed && "justify-center px-2 bg-gray-50/50"
                             )
                           }
                         >
@@ -78,8 +78,8 @@ export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
                         cn(
                           'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
                           isActive
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                            : 'text-muted-foreground hover:text-foreground',
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                            : 'text-gray-600 hover:text-foreground hover:bg-gray-100',
                           isCollapsed && "justify-center px-2"
                         )
                       }
