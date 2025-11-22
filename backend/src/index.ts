@@ -21,7 +21,10 @@ import userRoutes from './routes/userRoutes';
 
 dotenv.config();
 
+
 const app: Application = express();
+// Trust first proxy (for Railway, Vercel, etc.)
+app.set('trust proxy', 1);
 
 // Security middleware
 app.use(helmet());

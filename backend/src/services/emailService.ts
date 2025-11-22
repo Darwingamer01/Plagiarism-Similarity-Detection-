@@ -1,40 +1,36 @@
 
 import { logger } from '../utils/logger';
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 
 export class EmailService {
     async sendVerificationEmail(email: string, otp: string) {
-        // Create transporter (use environment variables for real credentials)
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: process.env.GMAIL_USER,
-                pass: process.env.GMAIL_PASS,
-            },
-        });
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
-        const mailOptions = {
-            from: `Plagiarism Detection <${process.env.GMAIL_USER}>`,
-            to: email,
-            subject: 'Verify Your Email Address',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 400px; margin: auto; border: 1px solid #eee; border-radius: 8px; padding: 24px; background: #fafafa;">
-                    <h2 style="text-align:center; color:#333;">Email Verification</h2>
-                    <p>Hello,</p>
-                    <p>Thank you for registering! Please use the following OTP to verify your email:</p>
-                    <div style="display:flex; justify-content:center; margin: 24px 0;">
-                        <div style="background:#f0f4ff; border:2px solid #4f8cff; border-radius:8px; padding:16px 32px; font-size:2em; font-weight:bold; color:#1a237e; letter-spacing:4px; text-align:center;">
-                            ${otp}
+            const msg = {
+                to: email,
+                from: {
+                    email: process.env.SENDGRID_SENDER_EMAIL as string,
+                    name: 'Plagiarism Detection'
+                },
+                subject: 'Verify Your Email Address',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 400px; margin: auto; border: 1px solid #eee; border-radius: 8px; padding: 24px; background: #fafafa;">
+                        <h2 style="text-align:center; color:#333;">Email Verification</h2>
+                        <p>Hello,</p>
+                        <p>Thank you for registering! Please use the following OTP to verify your email:</p>
+                        <div style="display:flex; justify-content:center; margin: 24px 0;">
+                            <div style="background:#f0f4ff; border:2px solid #4f8cff; border-radius:8px; padding:16px 32px; font-size:2em; font-weight:bold; color:#1a237e; letter-spacing:4px; text-align:center;">
+                                ${otp}
+                            </div>
                         </div>
+                        <p style="text-align:center; color:#888;">This code will expire in 10 minutes.</p>
+                        <p style="text-align:center; color:#888; font-size:0.95em;">If you didn't request this, please ignore this email.</p>
                     </div>
-                    <p style="text-align:center; color:#888;">This code will expire in 10 minutes.</p>
-                    <p style="text-align:center; color:#888; font-size:0.95em;">If you didn't request this, please ignore this email.</p>
-                </div>
-            `,
-        };
+                `,
+            };
 
         try {
-            await transporter.sendMail(mailOptions);
+            await sgMail.send(msg);
             logger.info(`Verification email sent to ${email}`);
             return true;
         } catch (error) {
