@@ -9,6 +9,7 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Pencil, Copy } from 'lucide-react'
+import { Skeleton } from '../components/ui/skeleton'
 import PageTransition from '../components/layout/PageTransition'
 import {
   AlertDialog,
@@ -205,7 +206,11 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {thresholdLoading ? (
-              <div className="text-muted-foreground">Loading threshold...</div>
+              <div className="space-y-4">
+                <Skeleton className="h-6 w-32 mb-2" />
+                <Skeleton className="h-10 w-48" />
+                <Skeleton className="h-8 w-24" />
+              </div>
             ) : (
               <>
                 <div className="flex flex-col gap-2">

@@ -123,7 +123,11 @@ export default function HistoryPage() {
               </div>
             ) : (
               <>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  <style>{`
+                    .scrollbar-hide::-webkit-scrollbar { display: none; }
+                    .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+                  `}</style>
                   <table className="min-w-full divide-y divide-border">
                     <thead className="bg-muted/50">
                       <tr>

@@ -130,7 +130,11 @@ export default function DocumentsPage() {
               </div>
             ) : (
               <>
-                <div className="rounded-md border">
+                <div className="rounded-md border overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                  <style>{`
+                    .scrollbar-hide::-webkit-scrollbar { display: none; }
+                    .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
+                  `}</style>
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-transparent">
