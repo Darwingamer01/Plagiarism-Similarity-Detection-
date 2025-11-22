@@ -122,19 +122,15 @@ export default function DocumentsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Skeleton key={i} className="h-16 w-full" />
-                ))}
-              </div>
-            ) : (
-              <>
-                <div className="rounded-md border overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  <style>{`
-                    .scrollbar-hide::-webkit-scrollbar { display: none; }
-                    .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
-                  `}</style>
+            <div className="rounded-md border overflow-x-auto scrollbar-hide">
+              {isLoading ? (
+                <div className="space-y-3">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Skeleton key={i} className="h-16 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <>
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-transparent">
@@ -210,8 +206,61 @@ export default function DocumentsPage() {
                       )}
                     </TableBody>
                   </Table>
-                </div>
-
+                  {data && data.pagination.totalPages > 1 && (
+                    <div className="p-4 border-t">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              onClick={() => setPage(Math.max(1, page - 1))}
+                              className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                          {Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1).map((p) => {
+                            // Show first page, last page, current page, and pages around current
+                            if (
+                              p === 1 ||
+                              p === data.pagination.totalPages ||
+                              (p >= page - 1 && p <= page + 1)
+                            ) {
+                              return (
+                                <PaginationItem key={p}>
+                                  <PaginationLink
+                                    isActive={page === p}
+                                    onClick={() => setPage(p)}
+                                    className="cursor-pointer"
+                                  >
+                                    {p}
+                                  </PaginationLink>
+                                </PaginationItem>
+                              )
+                            }
+                            // Show ellipsis
+                            if (
+                              (p === page - 2 && p > 1) ||
+                              (p === page + 2 && p < data.pagination.totalPages)
+                            ) {
+                              return (
+                                <PaginationItem key={p}>
+                                  <PaginationEllipsis />
+                                </PaginationItem>
+                              )
+                            }
+                            return null
+                          })}
+                          <PaginationItem>
+                            <PaginationNext
+                              onClick={() => setPage(Math.min(data.pagination.totalPages, page + 1))}
+                              className={page === data.pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
                 {data && data.pagination.totalPages > 1 && (
                   <div className="p-4 border-t">
                     <Pagination>
@@ -268,8 +317,7 @@ export default function DocumentsPage() {
                     </Pagination>
                   </div>
                 )}
-              </>
-            )}
+              
           </CardContent>
         </Card>
       </div>
