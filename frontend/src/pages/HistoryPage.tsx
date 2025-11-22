@@ -113,11 +113,11 @@ export default function HistoryPage() {
           )}
         </div>
 
-        <Card>
+        <Card className="rounded-lg overflow-hidden shadow-sm border-0">
           <CardContent className="p-0">
             {isLoading ? (
               <div className="space-y-3 p-6">
-                {[1,2,3,4,5].map((i) => (
+                {[1, 2, 3, 4, 5].map((i) => (
                   <Skeleton key={i} className="h-12 w-full" />
                 ))}
               </div>

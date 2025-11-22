@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom'
 import { cn } from '../../lib/utils'
-import { LayoutDashboard, Upload, FileText, Search, History, Settings } from 'lucide-react'
+import { LayoutDashboard, Upload, FileText, Search, History, Settings, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Separator } from '../ui/separator'
+import { Button } from '../ui/button'
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -12,11 +13,35 @@ const navItems = [
   { path: '/settings', label: 'Settings', icon: Settings },
 ]
 
-export default function Sidebar() {
+interface SidebarProps {
+  isCollapsed: boolean
+  toggleSidebar: () => void
+}
+
+export default function Sidebar({ isCollapsed, toggleSidebar }: SidebarProps) {
   return (
-    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 border-r bg-white shadow-sm">
-      <div className="flex flex-col h-full">
-        <div className="flex-1 overflow-auto py-6 px-4">
+    <aside
+      className={cn(
+        "fixed left-0 top-16 h-[calc(100vh-4rem)] border-r bg-white shadow-sm transition-all duration-300 ease-in-out z-40",
+        isCollapsed ? "w-20" : "w-64"
+      )}
+    >
+      <div className="relative h-full flex flex-col">
+        {/* Toggle Button */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleSidebar}
+          className="absolute -right-3 top-1/2 -translate-y-1/2 h-6 w-6 rounded-full border shadow-md bg-white z-50 hover:bg-gray-100 p-0"
+        >
+          {isCollapsed ? (
+            <ChevronRight className="h-3 w-3" />
+          ) : (
+            <ChevronLeft className="h-3 w-3" />
+          )}
+        </Button>
+
+        <div className="flex-1 overflow-hidden py-6 px-3">
           <nav className="space-y-1">
             {navItems.map((item, index) => {
               const Icon = item.icon
@@ -29,12 +54,18 @@ export default function Sidebar() {
                         'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-accent',
                         isActive
                           ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                          : 'text-muted-foreground hover:text-foreground'
+                          : 'text-muted-foreground hover:text-foreground',
+                        isCollapsed && "justify-center px-2"
                       )
                     }
+                    title={isCollapsed ? item.label : undefined}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span>{item.label}</span>
+                    <Icon className="h-5 w-5 shrink-0" />
+                    {!isCollapsed && (
+                      <span className="truncate transition-opacity duration-300">
+                        {item.label}
+                      </span>
+                    )}
                   </NavLink>
                   {index === 2 && <Separator className="my-3" />}
                 </div>
@@ -43,13 +74,24 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        <div className="border-t p-4">
-          <div className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted cursor-pointer">
-            <NavLink to="/documentation">
-              <p className="text-sm font-medium">Need Help?</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Check our documentation for guides and tutorials
-              </p>
+        <div className="border-t p-4 overflow-hidden">
+          <div
+            className={cn(
+              "rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted cursor-pointer",
+              isCollapsed && "p-2 flex justify-center"
+            )}
+          >
+            <NavLink to="/documentation" className={cn("flex items-center", isCollapsed && "justify-center")}>
+              {!isCollapsed ? (
+                <div>
+                  <p className="text-sm font-medium">Need Help?</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Check our documentation
+                  </p>
+                </div>
+              ) : (
+                <span className="text-muted-foreground font-bold text-lg">?</span>
+              )}
             </NavLink>
           </div>
         </div>
