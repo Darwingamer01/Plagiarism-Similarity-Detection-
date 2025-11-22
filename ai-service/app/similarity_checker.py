@@ -107,7 +107,8 @@ class SimilarityChecker:
         query_embeddings: np.ndarray,
         query_chunks: List[str],
         threshold: float = 0.88,
-        top_k: int = 5
+        top_k: int = 5,
+        user_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Search for similar documents in the index
@@ -150,14 +151,14 @@ class SimilarityChecker:
                 for sim, idx in zip(query_sims, query_indices):
                     if idx < 0 or idx >= len(self.metadata):
                         continue
-                    
+                    meta = self.metadata[idx]
+                    # Only compare against documents uploaded by the current user
+                    if user_id is not None and meta.get('user_id') != user_id:
+                        continue
                     # Apply threshold filter - only include documents above threshold
                     if sim < threshold:
                         continue
-                    
-                    meta = self.metadata[idx]
                     doc_id = meta['document_id']
-                    
                     if doc_id not in document_matches:
                         document_matches[doc_id] = {
                             'document_id': doc_id,
@@ -165,11 +166,9 @@ class SimilarityChecker:
                             'matched_chunks': 0,
                             'matches': []
                         }
-                    
                     # Update document stats
                     if sim > document_matches[doc_id]['max_similarity']:
                         document_matches[doc_id]['max_similarity'] = float(sim)
-                    
                     document_matches[doc_id]['matched_chunks'] += 1
                     document_matches[doc_id]['matches'].append({
                         'query_text': query_chunk[:200] + '...' if len(query_chunk) > 200 else query_chunk,
