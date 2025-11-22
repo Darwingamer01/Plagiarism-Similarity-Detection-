@@ -11,7 +11,7 @@ A comprehensive, full-stack plagiarism detection solution that leverages advance
 
 ### Authentication & User Management
 - **Secure Authentication**: Email/Password login with JWT (Access & Refresh Tokens).
-- **OAuth Integration**: One-click login/register with **Google** and **Apple**.
+- **OAuth Integration**: One-click login/register with **Google**.
 - **Email Verification**: OTP-based email verification for new accounts.
 - **Password Management**: Forgot Password, Reset Password, and Change Password flows.
 - **Profile Management**: Update profile details and manage API keys.
