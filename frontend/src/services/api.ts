@@ -28,8 +28,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const originalRequest: any = error.config
+    const originalRequest = error.config as typeof error.config & { _retry?: boolean }
 
     // Handle 401 errors (token expired)
     if (error.response?.status === 401 && !originalRequest._retry) {
