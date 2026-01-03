@@ -122,7 +122,7 @@ export default function DocumentsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="rounded-md border overflow-x-auto scrollbar-hide">
+            <div className="w-full rounded-md border overflow-x-auto scrollbar-hide">
               {isLoading ? (
                 <div className="space-y-3">
                   {[1, 2, 3, 4, 5].map((i) => (
@@ -261,63 +261,63 @@ export default function DocumentsPage() {
                 </>
               )}
             </div>
-                {data && data.pagination.totalPages > 1 && (
-                  <div className="p-4 border-t">
-                    <Pagination>
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious
-                            onClick={() => setPage(Math.max(1, page - 1))}
-                            className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                          />
-                        </PaginationItem>
+            {data && data.pagination.totalPages > 1 && (
+              <div className="p-4 border-t">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => setPage(Math.max(1, page - 1))}
+                        className={page === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
 
-                        {Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1).map((p) => {
-                          // Show first page, last page, current page, and pages around current
-                          if (
-                            p === 1 ||
-                            p === data.pagination.totalPages ||
-                            (p >= page - 1 && p <= page + 1)
-                          ) {
-                            return (
-                              <PaginationItem key={p}>
-                                <PaginationLink
-                                  isActive={page === p}
-                                  onClick={() => setPage(p)}
-                                  className="cursor-pointer"
-                                >
-                                  {p}
-                                </PaginationLink>
-                              </PaginationItem>
-                            )
-                          }
+                    {Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1).map((p) => {
+                      // Show first page, last page, current page, and pages around current
+                      if (
+                        p === 1 ||
+                        p === data.pagination.totalPages ||
+                        (p >= page - 1 && p <= page + 1)
+                      ) {
+                        return (
+                          <PaginationItem key={p}>
+                            <PaginationLink
+                              isActive={page === p}
+                              onClick={() => setPage(p)}
+                              className="cursor-pointer"
+                            >
+                              {p}
+                            </PaginationLink>
+                          </PaginationItem>
+                        )
+                      }
 
-                          // Show ellipsis
-                          if (
-                            (p === page - 2 && p > 1) ||
-                            (p === page + 2 && p < data.pagination.totalPages)
-                          ) {
-                            return (
-                              <PaginationItem key={p}>
-                                <PaginationEllipsis />
-                              </PaginationItem>
-                            )
-                          }
+                      // Show ellipsis
+                      if (
+                        (p === page - 2 && p > 1) ||
+                        (p === page + 2 && p < data.pagination.totalPages)
+                      ) {
+                        return (
+                          <PaginationItem key={p}>
+                            <PaginationEllipsis />
+                          </PaginationItem>
+                        )
+                      }
 
-                          return null
-                        })}
+                      return null
+                    })}
 
-                        <PaginationItem>
-                          <PaginationNext
-                            onClick={() => setPage(Math.min(data.pagination.totalPages, page + 1))}
-                            className={page === data.pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  </div>
-                )}
-              
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => setPage(Math.min(data.pagination.totalPages, page + 1))}
+                        className={page === data.pagination.totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+
           </CardContent>
         </Card>
       </div>

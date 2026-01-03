@@ -31,7 +31,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
-      <div className="container flex h-16 items-center justify-between px-8">
+      <div className="w-full flex h-16 items-center justify-between px-6">
         <Link to="/dashboard" className="flex items-center gap-3 font-bold">
           <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary">
             <Shield className="h-5 w-5 text-primary-foreground" />

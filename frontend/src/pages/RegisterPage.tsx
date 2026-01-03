@@ -113,13 +113,17 @@ export default function RegisterPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="flex flex-col items-center mb-8"
         >
-          <div className="flex items-center justify-center h-14 w-14 rounded-full bg-primary mb-4 animate-scale-in">
-            <Shield className="h-7 w-7 text-primary-foreground" />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight">Plagiarism Detection</h1>
-          <p className="text-muted-foreground mt-2">Secure document verification</p>
+          <Link
+            to="/"
+            className="flex flex-col items-center mb-8 cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <div className="flex items-center justify-center h-14 w-14 rounded-full bg-primary mb-4 animate-scale-in">
+              <Shield className="h-7 w-7 text-primary-foreground" />
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight">Plagiarism Detection</h1>
+            <p className="text-muted-foreground mt-2">Secure document verification</p>
+          </Link>
         </motion.div>
 
         <motion.div
@@ -303,7 +307,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-muted-foreground mt-8">
           By creating an account, you agree to our{' '}
-          <Link to="/terms" className="font-medium text-foreground hover:underline">
+          <Link to="/terms?minimal=true" className="font-medium text-foreground hover:underline">
             Terms of Service and Privacy Policy
           </Link>
         </p>

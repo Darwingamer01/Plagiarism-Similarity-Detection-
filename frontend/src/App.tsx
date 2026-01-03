@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import ScrollToTop from './components/ScrollToTop'
 import { useAuthStore } from './stores/authStore'
 import Layout from './components/layout/Layout'
+import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import VerifyEmailPage from './pages/VerifyEmailPage'
@@ -20,6 +22,9 @@ import SetPasswordPage from './pages/SetPasswordPage'
 import DocumentationPage from './pages/DocumentationPage'
 
 import TermsPage from './pages/TermsPage'
+import PrivacyPage from './pages/PrivacyPage'
+import ContactPage from './pages/ContactPage'
+import FAQPage from './pages/FAQPage'
 
 function App() {
   console.log('App component rendering...')
@@ -29,8 +34,10 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background">
+      <ScrollToTop />
       <Routes>
         {/* Public routes */}
+        <Route path="/" element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" />} />
         <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/dashboard" />} />
         <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/dashboard" />} />
         <Route path="/verify-email" element={!isAuthenticated ? <VerifyEmailPage /> : <Navigate to="/dashboard" />} />
@@ -38,10 +45,13 @@ function App() {
         <Route path="/forgot-password" element={!isAuthenticated ? <ForgotPasswordPage /> : <Navigate to="/dashboard" />} />
         <Route path="/reset-password" element={!isAuthenticated ? <ResetPasswordPage /> : <Navigate to="/dashboard" />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/documentation" element={<DocumentationPage />} />
 
         {/* Protected routes */}
         <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
-          <Route index element={<Navigate to="/dashboard" />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="upload" element={<UploadPage />} />
           <Route path="documents" element={<DocumentsPage />} />
@@ -52,7 +62,7 @@ function App() {
           <Route path="verify-email-otp" element={<VerifyEmailOTPPage />} />
           <Route path="change-password" element={<ChangePasswordPage />} />
           <Route path="set-password" element={<SetPasswordPage />} />
-          <Route path="documentation" element={<DocumentationPage />} />
+          <Route path="set-password" element={<SetPasswordPage />} />
         </Route>
 
         {/* 404 */}
