@@ -3,7 +3,7 @@ import { Shield } from 'lucide-react'
 export function LandingFooter() {
     return (
         <footer className="py-12 bg-primary text-primary-foreground border-t border-primary-foreground/10">
-            <div className="container mx-auto px-6">
+            <div className="w-full px-6 md:px-12">
                 <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-8">
                     {/* Logo - Left aligned on desktop, centered on mobile */}
                     <div className="flex items-center justify-center md:justify-start gap-2 font-bold opacity-90">

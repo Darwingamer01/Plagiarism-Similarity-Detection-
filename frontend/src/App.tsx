@@ -20,6 +20,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage'
 import ChangePasswordPage from './pages/ChangePasswordPage'
 import SetPasswordPage from './pages/SetPasswordPage'
 import DocumentationPage from './pages/DocumentationPage'
+import DashboardDocumentationPage from './pages/DashboardDocumentationPage'
 
 import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
@@ -63,6 +64,7 @@ function App() {
           <Route path="change-password" element={<ChangePasswordPage />} />
           <Route path="set-password" element={<SetPasswordPage />} />
           <Route path="set-password" element={<SetPasswordPage />} />
+          <Route path="dashboard-documentation" element={<DashboardDocumentationPage />} />
         </Route>
 
         {/* 404 */}

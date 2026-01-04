@@ -9,7 +9,7 @@ export default function PrivacyPage() {
             <LandingHeader />
             <div className="flex-grow pt-24">
                 <PageTransition>
-                    <div className="container mx-auto px-4 md:px-6 py-12 max-w-4xl">
+                    <div className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-12">
                         <div className="text-center mb-12">
                             <div className="flex justify-center mb-6">
                                 <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">

@@ -11,7 +11,7 @@ export default function TermsPage() {
     const isMinimal = new URLSearchParams(location.search).get('minimal') === 'true'
 
     const Content = () => (
-        <div className="max-w-3xl mx-auto py-12">
+        <div className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-12">
             {!isMinimal ? (
                 <div className="text-center mb-12">
                     <div className="flex justify-center mb-6">

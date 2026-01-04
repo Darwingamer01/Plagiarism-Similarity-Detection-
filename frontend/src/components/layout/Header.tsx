@@ -3,10 +3,14 @@ import { useAuthStore } from '../../stores/authStore'
 import { Button } from '../ui/button'
 import { Avatar, AvatarFallback } from '../ui/avatar'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
-import { Shield, LogOut, Settings, Lock, Key } from 'lucide-react'
+import { Shield, LogOut, Settings, Lock, Key, Menu } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 
-export default function Header() {
+interface HeaderProps {
+  onMenuClick?: () => void
+}
+
+export default function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -31,13 +35,25 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
-      <div className="w-full flex h-16 items-center justify-between px-6">
-        <Link to="/dashboard" className="flex items-center gap-3 font-bold">
-          <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary">
-            <Shield className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl tracking-tight">Plagiarism Detector</span>
-        </Link>
+      <div className="w-full flex h-16 items-center justify-between px-4 md:px-6">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={onMenuClick}
+            aria-label="Toggle Menu"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
+          <Link to="/dashboard" className="flex items-center gap-3 font-bold">
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary">
+              <Shield className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl tracking-tight hidden sm:inline-block">Plagiarism Detector</span>
+          </Link>
+        </div>
 
         <div className="flex items-center gap-4">
           <DropdownMenu>
