@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import ScrollToTop from './components/ScrollToTop'
 import { useAuthStore } from './stores/authStore'
 import Layout from './components/layout/Layout'
+import HeaderOnlyLayout from './components/layout/HeaderOnlyLayout'
 import LandingPage from './pages/LandingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -61,10 +62,13 @@ function App() {
           <Route path="history" element={<HistoryPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="verify-email-otp" element={<VerifyEmailOTPPage />} />
-          <Route path="change-password" element={<ChangePasswordPage />} />
-          <Route path="set-password" element={<SetPasswordPage />} />
-          <Route path="set-password" element={<SetPasswordPage />} />
           <Route path="dashboard-documentation" element={<DashboardDocumentationPage />} />
+        </Route>
+
+        {/* Protected routes without Sidebar */}
+        <Route element={isAuthenticated ? <HeaderOnlyLayout /> : <Navigate to="/login" />}>
+          <Route path="/change-password" element={<ChangePasswordPage />} />
+          <Route path="/set-password" element={<SetPasswordPage />} />
         </Route>
 
         {/* 404 */}

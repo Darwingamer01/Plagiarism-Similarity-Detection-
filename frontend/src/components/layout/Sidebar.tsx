@@ -64,7 +64,7 @@ export default function Sidebar({ isMobileOpen, setIsMobileOpen }: SidebarProps)
 
       <div className="border-t p-4">
         <div className="rounded-lg bg-muted/50 p-4 transition-colors hover:bg-muted cursor-pointer">
-          <Link to="/dashboard/documentation" className="flex items-center gap-3">
+          <Link to="/dashboard-documentation" className="flex items-center gap-3">
             <HelpCircle className="h-5 w-5 text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">Need Help?</p>
