@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { Activity } from 'lucide-react'
 import api from '../services/api'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Skeleton } from '../components/ui/skeleton'
@@ -98,24 +99,34 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-1">
-              {stats?.recentActivity?.slice(0, 5).map((activity: { name: string; timestamp: string; type: string }, index: number) => (
-                <div key={index}>
-                  <div className="flex items-center justify-between py-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-sm">{activity.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          {new Date(activity.timestamp).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                    <Badge variant="secondary" className="font-normal">
-                      {activity.type}
-                    </Badge>
-                  </div>
-                  {index < 4 && <Separator />}
+              {!stats?.recentActivity || stats.recentActivity.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
+                  <Activity className="h-12 w-12 mb-3 opacity-20" />
+                  <p className="text-sm font-medium">No recent activity</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Your latest actions will appear here
+                  </p>
                 </div>
-              ))}
+              ) : (
+                stats.recentActivity.slice(0, 5).map((activity: { name: string; timestamp: string; type: string }, index: number) => (
+                  <div key={index}>
+                    <div className="flex items-center justify-between py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <span className="font-medium text-sm">{activity.name}</span>
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(activity.timestamp).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                      <Badge variant="secondary" className="font-normal">
+                        {activity.type}
+                      </Badge>
+                    </div>
+                    {index < Math.min(stats.recentActivity.length, 5) - 1 && <Separator />}
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
