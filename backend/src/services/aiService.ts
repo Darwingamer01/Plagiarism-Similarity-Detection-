@@ -5,6 +5,46 @@ import { config } from '../config/environment';
 import { logger } from '../utils/logger';
 import { AppError } from '../middleware/errorHandler';
 
+export interface SimilarityResult {
+  success: boolean;
+  query_filename: string;
+  sentiment: {
+    label: string;
+    score: number;
+  };
+  context: Array<{
+    text: string;
+    score: number;
+  }>;
+  max_similarity: number;
+  similar_documents: Array<{
+    document_id: string;
+    max_similarity: number;
+    matched_chunks: number;
+    matches: Array<{
+      query_text: string;
+      matched_text: string;
+      similarity: number;
+      chunk_index: number;
+    }>;
+    report: {
+      reasoning: string;
+      comparison: {
+        common_topics: string[];
+        query_unique_topics: string[];
+        match_unique_topics: string[];
+        sentiment_contrast: {
+          query: string;
+          match: string;
+          match_status: string;
+        }
+      }
+    };
+  }>;
+  aggregate_score?: number;
+  overall_score?: number;
+}
+
 class AIService {
   private client: AxiosInstance;
   private baseURL: string;
@@ -52,9 +92,9 @@ class AIService {
     filePath: string,
     filename: string,
     userId: string,
-    threshold: number = 0.88,
+    threshold: number = 0.70,
     topK: number = 5
-  ): Promise<any> {
+  ): Promise<SimilarityResult> {
     try {
       const formData = new FormData();
       formData.append('file', fs.createReadStream(filePath));

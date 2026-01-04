@@ -8,7 +8,7 @@ import { Skeleton } from '../components/ui/skeleton'
 import { Badge } from '../components/ui/badge'
 import { Button } from '../components/ui/button'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog'
-import { Trash2 } from 'lucide-react'
+import { Trash2, Eye } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
 import {
   Pagination,
@@ -76,17 +76,17 @@ export default function HistoryPage() {
   return (
     <PageTransition>
       <div className="space-y-8">
-        <div className="flex items-center justify-between animate-fade-in">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight">Similarity Check History</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">Similarity Check History</h1>
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
               View and manage your past similarity check results
             </p>
           </div>
           {data && data.checks && data.checks.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" disabled={clearHistoryMutation.isPending}>
+                <Button variant="destructive" size="sm" disabled={clearHistoryMutation.isPending} className="w-full sm:w-auto">
                   <Trash2 className="h-4 w-4 mr-2" />
                   Clear History
                 </Button>
@@ -123,33 +123,29 @@ export default function HistoryPage() {
               </div>
             ) : (
               <>
-                <div className="w-full overflow-x-auto scrollbar-hide border-b" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  <style>{`
-                    .scrollbar-hide::-webkit-scrollbar { display: none; }
-                    .scrollbar-hide { scrollbar-width: none; -ms-overflow-style: none; }
-                  `}</style>
+                <div className="w-full overflow-x-auto scrollbar-hide border-b">
                   <table className="min-w-full divide-y divide-border">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase whitespace-nowrap">
                           Query File
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase whitespace-nowrap">
                           Max Similarity
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        <th className="px-6 py-3 text-xs font-medium text-muted-foreground uppercase whitespace-nowrap text-center">
+                          Aggregate
+                        </th>
+                        <th className="px-6 py-3 text-xs font-medium text-muted-foreground uppercase whitespace-nowrap text-center">
+                          Overall
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase whitespace-nowrap">
                           Risk Level
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                          Threshold
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
-                          Status
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase whitespace-nowrap">
                           Date
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase whitespace-nowrap">
                           Actions
                         </th>
                       </tr>
@@ -169,18 +165,27 @@ export default function HistoryPage() {
                         </tr>
                       ) : (
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        data.checks.map((check: any, index: number) => (
+                        data.checks.map((check: any) => (
                           <tr
                             key={check.id}
                             className="hover:bg-muted/50 transition-all duration-200 animate-fade-in"
-                            style={{ animationDelay: `${index * 50}ms` }}
                           >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium max-w-[200px] truncate" title={check.queryFilename}>
                               {check.queryFilename}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                               <span className="font-semibold text-primary">
                                 {(check.maxSimilarity * 100).toFixed(1)}%
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                              <span className="text-blue-600 dark:text-blue-400 font-medium">
+                                {(check.aggregateScore ? check.aggregateScore * 100 : 0).toFixed(1)}%
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
+                              <span className={check.overallScore > 0.7 ? "text-red-600 font-bold" : check.overallScore > 0.4 ? "text-orange-600 font-bold" : "text-green-600 font-bold"}>
+                                {(check.overallScore ? check.overallScore * 100 : 0).toFixed(1)}%
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
@@ -189,33 +194,18 @@ export default function HistoryPage() {
                               </Badge>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                              {(check.threshold * 100).toFixed(0)}%
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <Badge
-                                variant="secondary"
-                                className={
-                                  check.status === 'completed'
-                                    ? 'bg-green-100 text-green-800 hover:bg-green-100'
-                                    : check.status === 'processing'
-                                      ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
-                                      : 'bg-red-100 text-red-800 hover:bg-red-100'
-                                }
-                              >
-                                {check.status}
-                              </Badge>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                               {new Date(check.createdAt).toLocaleDateString()}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-3">
                                 <Button
-                                  variant="link"
-                                  className="h-auto p-0 text-primary"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
                                   onClick={() => navigate(`/results/${check.id}`)}
+                                  title="View Details"
                                 >
-                                  View Details
+                                  <Eye className="h-4 w-4" />
                                 </Button>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>

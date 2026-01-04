@@ -6,7 +6,11 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     
     # Model Configuration
-    MODEL_NAME: str = "sentence-transformers/all-MiniLM-L6-v2"
+    MAX_FILE_SIZE: int = 5242880  # 5MB
+    
+    # Model Configuration
+    MODEL_NAME: str = "sentence-transformers/all-mpnet-base-v2"
+    SENTIMENT_MODEL: str = "distilbert-base-uncased-finetuned-sst-2-english"
     MODEL_CACHE_DIR: str = "/app/models"
     DATA_DIR: str = "/app/data"
     

@@ -8,7 +8,7 @@ import { Badge } from '../components/ui/badge'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table'
 import { Skeleton } from '../components/ui/skeleton'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '../components/ui/alert-dialog'
-import { FileText, Trash2 } from 'lucide-react'
+import { FileText, Trash2, Eye } from 'lucide-react'
 import PageTransition from '../components/layout/PageTransition'
 import {
   Pagination,
@@ -19,6 +19,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "../components/ui/pagination"
+import { DocumentDetailsModal } from "../components/documents/DocumentDetailsModal"
 
 export default function DocumentsPage() {
   const queryClient = useQueryClient()
@@ -68,57 +69,58 @@ export default function DocumentsPage() {
   }
 
   const documents = data?.documents || []
+  const [selectedDocId, setSelectedDocId] = useState<string | null>(null)
 
   return (
     <PageTransition>
       <div className="space-y-8">
-        <div className="animate-fade-in">
-          <h1 className="text-4xl font-bold tracking-tight">My Documents</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage and view all your uploaded documents
-          </p>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-in">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight">My Documents</h1>
+            <p className="text-muted-foreground mt-2">
+              Manage and view all your uploaded documents
+            </p>
+          </div>
+          {documents.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm" disabled={deleteAllMutation.isPending} className="w-full sm:w-auto">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete All
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete All Documents?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete all {data?.pagination.total || 0} document(s) from your library.
+                    This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteAllMutation.mutate()}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {deleteAllMutation.isPending ? 'Deleting...' : 'Delete All'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
 
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="h-5 w-5" />
-                  Document Library
-                </CardTitle>
-                <CardDescription>
-                  {data?.pagination.total || 0} documents indexed
-                </CardDescription>
-              </div>
-              {documents.length > 0 && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" size="sm" disabled={deleteAllMutation.isPending}>
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete All
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Delete All Documents?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This will permanently delete all {data?.pagination.total || 0} document(s) from your library.
-                        This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => deleteAllMutation.mutate()}
-                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      >
-                        {deleteAllMutation.isPending ? 'Deleting...' : 'Delete All'}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Document Library
+              </CardTitle>
+              <CardDescription>
+                {data?.pagination.total || 0} documents indexed
+              </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
@@ -134,13 +136,13 @@ export default function DocumentsPage() {
                   <Table>
                     <TableHeader>
                       <TableRow className="hover:bg-transparent">
-                        <TableHead className="font-semibold">Filename</TableHead>
-                        <TableHead className="font-semibold">Type</TableHead>
-                        <TableHead className="font-semibold">Size</TableHead>
-                        <TableHead className="font-semibold">Chunks</TableHead>
-                        <TableHead className="font-semibold">Status</TableHead>
-                        <TableHead className="font-semibold">Date</TableHead>
-                        <TableHead className="text-right font-semibold">Actions</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Filename</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Type</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Size</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Chunks</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Status</TableHead>
+                        <TableHead className="font-semibold whitespace-nowrap">Date</TableHead>
+                        <TableHead className="font-semibold text-center text-xs text-muted-foreground uppercase whitespace-nowrap">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -161,7 +163,7 @@ export default function DocumentsPage() {
                             className="animate-fade-in transition-colors hover:bg-muted/50"
                             style={{ animationDelay: `${index * 50}ms` }}
                           >
-                            <TableCell className="font-medium">{doc.filename}</TableCell>
+                            <TableCell className="font-medium max-w-[200px] truncate" title={doc.filename}>{doc.filename}</TableCell>
                             <TableCell className="text-muted-foreground">{doc.fileType}</TableCell>
                             <TableCell className="text-muted-foreground">
                               {(doc.fileSize / 1024).toFixed(2)} KB
@@ -175,31 +177,42 @@ export default function DocumentsPage() {
                             <TableCell className="text-muted-foreground">
                               {new Date(doc.createdAt).toLocaleDateString()}
                             </TableCell>
-                            <TableCell className="text-right">
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Document</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Are you sure you want to delete "{doc.filename}"? This action cannot be undone.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => deleteMutation.mutate(doc.id)}
-                                      className="bg-destructive hover:bg-destructive/90"
-                                    >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                            <TableCell>
+                              <div className="flex items-center justify-center gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-primary hover:text-primary hover:bg-primary/10"
+                                  onClick={() => setSelectedDocId(doc.id)}
+                                  title="View Details"
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-destructive hover:text-destructive">
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete Document</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete "{doc.filename}"? This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => deleteMutation.mutate(doc.id)}
+                                        className="bg-destructive hover:bg-destructive/90"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))
@@ -320,6 +333,11 @@ export default function DocumentsPage() {
 
           </CardContent>
         </Card>
+
+        <DocumentDetailsModal
+          documentId={selectedDocId}
+          onClose={() => setSelectedDocId(null)}
+        />
       </div>
     </PageTransition>
   )

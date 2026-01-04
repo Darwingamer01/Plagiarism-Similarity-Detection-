@@ -9,6 +9,8 @@ import { Input } from '../ui/input'
 import { Textarea } from '../ui/textarea'
 import { Label } from '../ui/label'
 import { toast } from 'react-hot-toast'
+import { api } from '../../services/api'
+import { AxiosError } from 'axios'
 
 
 
@@ -18,10 +20,33 @@ export function DashboardDocumentationContent() {
     const handleContactSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        toast.success('Message sent! We will get back to you soon.')
-        setIsSubmitting(false)
+
+        try {
+            // Get form data
+            const form = e.target as HTMLFormElement
+            const firstName = (form.elements.namedItem('firstName') as HTMLInputElement).value
+            const lastName = (form.elements.namedItem('lastName') as HTMLInputElement).value
+            const email = (form.elements.namedItem('email') as HTMLInputElement).value
+            const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value
+
+            const response = await api.post('/contact', {
+                firstName,
+                lastName,
+                email,
+                message
+            })
+
+            if (response.data.success) {
+                toast.success('Message sent! We will get back to you soon.')
+                form.reset()
+            }
+        } catch (error) {
+            console.error('Error sending message:', error)
+            const axiosError = error as AxiosError<{ message: string }>
+            toast.error(axiosError.response?.data?.message || 'Failed to send message. Please try again.')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const tabContentVariants = {
@@ -51,7 +76,7 @@ export function DashboardDocumentationContent() {
                 </TabsList>
 
                 <AnimatePresence mode="wait">
-                    <MotionTabsContent value="getting-started" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
+                    <MotionTabsContent key="getting-started" value="getting-started" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
                                 <Book className="h-6 w-6 text-primary" /> Getting Started
@@ -80,11 +105,11 @@ export function DashboardDocumentationContent() {
                                         <CardDescription>Install our SDKs for Node.js or Python.</CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
-                                        <div className="rounded-md bg-slate-950 p-4 font-mono text-sm text-slate-50">
-                                            npm install @plagiarism-detector/sdk
-                                        </div>
-                                        <div className="rounded-md bg-slate-950 p-4 font-mono text-sm text-slate-50">
-                                            pip install plagiarism-detector
+                                        <div className="space-y-2">
+                                            <p className="text-sm text-muted-foreground">We currently recommend using our REST API directly. SDKs are coming soon.</p>
+                                            <div className="rounded-md bg-slate-950 p-4 font-mono text-sm text-slate-50">
+                                                npm install axios
+                                            </div>
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -92,7 +117,7 @@ export function DashboardDocumentationContent() {
                         </div>
                     </MotionTabsContent>
 
-                    <MotionTabsContent value="core-concepts" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
+                    <MotionTabsContent key="core-concepts" value="core-concepts" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
                                 <FileText className="h-6 w-6 text-primary" /> Core Concepts
@@ -126,7 +151,7 @@ export function DashboardDocumentationContent() {
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-sm text-muted-foreground">
-                                            Comprehensive data including Similarity Score (0-100%) and AI Probability (0-100%) with highlighted evidence.
+                                            Comprehensive data including Similarity Score, Sentiment Analysis, Context Tags, and AI Probability with highlighted evidence.
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -134,7 +159,7 @@ export function DashboardDocumentationContent() {
                         </div>
                     </MotionTabsContent>
 
-                    <MotionTabsContent value="api-reference" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
+                    <MotionTabsContent key="api-reference" value="api-reference" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
                                 <Code className="h-6 w-6 text-primary" /> API Reference
@@ -179,7 +204,7 @@ export function DashboardDocumentationContent() {
                         </div>
                     </MotionTabsContent>
 
-                    <MotionTabsContent value="faq" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
+                    <MotionTabsContent key="faq" value="faq" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
                                 <HelpCircle className="h-6 w-6 text-primary" /> Frequently Asked Questions
@@ -213,7 +238,7 @@ export function DashboardDocumentationContent() {
                         </div>
                     </MotionTabsContent>
 
-                    <MotionTabsContent value="support" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
+                    <MotionTabsContent key="support" value="support" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
                         <div className="grid lg:grid-cols-5 gap-12">
                             <div className="lg:col-span-2 space-y-6">
                                 <div>

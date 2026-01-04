@@ -4,7 +4,16 @@ import sgMail from '@sendgrid/mail';
 
 export class EmailService {
     async sendVerificationEmail(email: string, otp: string) {
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
+        try {
+            // ALWAYS Log OTP for local development/testing convenience
+            logger.info(`[DEV] Verification OTP for ${email}: ${otp}`);
+
+            const apiKey = process.env.SENDGRID_API_KEY;
+            if (!apiKey) {
+                logger.error('SENDGRID_API_KEY is not defined');
+                return false;
+            }
+            sgMail.setApiKey(apiKey);
 
             const msg = {
                 to: email,
@@ -29,12 +38,12 @@ export class EmailService {
                 `,
             };
 
-        try {
             await sgMail.send(msg);
             logger.info(`Verification email sent to ${email}`);
             return true;
         } catch (error) {
             logger.error(`Failed to send verification email: ${error}`);
+            // Don't crash the app, just return false
             return false;
         }
     }
@@ -107,6 +116,86 @@ export class EmailService {
             return true;
         } catch (error) {
             logger.error(`Failed to send email change OTP: ${error}`);
+            return false;
+        }
+    }
+    async sendContactFormEmail(name: string, email: string, message: string) {
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
+
+        const senderEmail = process.env.SENDGRID_SENDER_EMAIL as string;
+
+        // Plain text version is crucial for spam filters
+        const textContent = `
+New Contact Message
+
+Name: ${name}
+Email: ${email}
+
+Message:
+${message}
+
+--------------------------------------------------
+Sent from Plagiarism Detection Platform
+        `.trim();
+
+        const msg = {
+            to: senderEmail || 'utkarsh11980@gmail.com',
+            from: {
+                email: senderEmail,
+                name: 'App Notification' // Neutral, non-marketing name
+            },
+            replyTo: {
+                email: email,
+                name: name
+            },
+            subject: `Message from ${name}`, // Simple, direct subject
+            text: textContent, // Include plain text version
+            html: `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="utf-8">
+                    <title>New Contact Message</title>
+                </head>
+                <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; margin: 0; padding: 20px;">
+                    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden;">
+                        <div style="background-color: #000000; padding: 20px; text-align: center;">
+                            <h2 style="color: #ffffff; margin: 0; font-size: 20px;">New Contact Message</h2>
+                        </div>
+                        
+                        <div style="padding: 30px;">
+                            <div style="margin-bottom: 24px;">
+                                <p style="margin: 0; color: #666; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">From</p>
+                                <p style="margin: 4px 0 0; font-size: 16px; font-weight: 600;">${name}</p>
+                                <a href="mailto:${email}" style="color: #2563eb; text-decoration: none;">${email}</a>
+                            </div>
+
+                            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 20px; margin-top: 20px;">
+                                <p style="margin: 0; font-style: italic; white-space: pre-wrap;">${message}</p>
+                            </div>
+                        </div>
+
+                        <div style="background-color: #f9fafb; padding: 15px; text-align: center; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 0; color: #6b7280; font-size: 12px;">
+                                To reply, simply hit reply to this email.
+                            </p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `,
+        };
+
+        try {
+            await sgMail.send(msg);
+            logger.info(`Contact form email sent from ${email}`);
+            return true;
+        } catch (error) {
+            logger.error(`Failed to send contact form email: ${error}`);
+            // Log the actual error response if available for debugging
+            if ((error as any).response) {
+                logger.error(JSON.stringify((error as any).response.body));
+            }
             return false;
         }
     }

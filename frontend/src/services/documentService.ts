@@ -30,8 +30,7 @@ export const documentService = {
     await api.delete(`/documents/${id}`)
   },
 
-  async deleteAllDocuments(): Promise<{ deletedCount: number }> {
-    const response = await api.delete('/documents')
-    return response.data.data
+  async deleteAllDocuments() {
+    return api.delete('/documents').then(res => res.data.data)
   },
 }

@@ -19,6 +19,7 @@ import documentRoutes from './routes/documentRoutes';
 import similarityRoutes from './routes/similarityRoutes';
 import systemRoutes from './routes/systemRoutes';
 import userRoutes from './routes/userRoutes';
+import contactRoutes from './routes/contactRoutes';
 
 dotenv.config();
 
@@ -118,6 +119,7 @@ app.use(`${apiPrefix}/documents`, documentRoutes);
 app.use(`${apiPrefix}/similarity`, similarityRoutes);
 app.use(`${apiPrefix}/system`, systemRoutes);
 app.use(`${apiPrefix}/users`, userRoutes);
+app.use(`${apiPrefix}/contact`, contactRoutes);
 
 // Error handlers
 app.use(notFoundHandler);

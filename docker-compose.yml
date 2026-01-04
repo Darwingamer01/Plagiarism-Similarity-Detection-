@@ -88,7 +88,7 @@ services:
     networks:
       - plagiarism-network
     ports:
-      - "5432:5432"
+      - "5433:5432"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U plagiarism_user -d plagiarism_db"]

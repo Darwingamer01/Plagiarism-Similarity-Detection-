@@ -53,12 +53,12 @@ describe('SimilarityService', () => {
                 .mockResolvedValueOnce({
                     rows: [{ id: 'check-1' }],
                 })
-                // Mock update check
-                .mockResolvedValueOnce({})
                 // Mock get document details for formatting
                 .mockResolvedValueOnce({
                     rows: [{ id: 'doc-1', original_filename: 'Doc 1' }],
                 })
+                // Mock update check
+                .mockResolvedValueOnce({})
 
             mockAiService.checkSimilarity.mockResolvedValue({
                 similar_documents: [

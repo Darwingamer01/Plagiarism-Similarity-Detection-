@@ -37,15 +37,16 @@ export default function UploadPage() {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
     },
     maxSize: 5242880, // 5MB
-    maxFiles: 10,
+    maxFiles: 1,
     onDrop: (acceptedFiles) => {
+      // Always replace with the new file (since maxFiles is 1)
       setFiles(acceptedFiles)
     },
   })
 
   const handleUpload = () => {
     if (files.length === 0) {
-      toast.error('Please select files to upload')
+      toast.error('Please select a file to upload')
       return
     }
     uploadMutation.mutate(files)
@@ -59,9 +60,9 @@ export default function UploadPage() {
     <PageTransition>
       <div className="space-y-8">
         <div className="animate-fade-in">
-          <h1 className="text-4xl font-bold tracking-tight">Upload Documents</h1>
+          <h1 className="text-4xl font-bold tracking-tight">Upload Document</h1>
           <p className="text-muted-foreground mt-2">
-            Add documents to your library for plagiarism detection
+            Add a document to your library for plagiarism detection
           </p>
         </div>
 
@@ -72,7 +73,7 @@ export default function UploadPage() {
               Document Upload
             </CardTitle>
             <CardDescription>
-              Drag and drop files or click to browse. Maximum 10 files, 5MB each.
+              Drag and drop a file or click to browse. Maximum 1 file, 5MB.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">

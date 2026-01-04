@@ -36,7 +36,7 @@ async function runMigrations() {
       ALTER TABLE users 
       ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);
     `);
-    
+
     await db.query(`
       ALTER TABLE users 
       ADD COLUMN IF NOT EXISTS apple_id VARCHAR(255);

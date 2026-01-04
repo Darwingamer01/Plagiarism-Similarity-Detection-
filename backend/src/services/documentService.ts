@@ -37,12 +37,20 @@ export class DocumentService {
           document.id
         );
 
-        // Update document with chunks count and status
+        // Update document with chunks count, status, and AI analysis results
         await db.query(
           `UPDATE documents
-           SET chunks_count = $1, status = $2, processed_at = CURRENT_TIMESTAMP
-           WHERE id = $3`,
-          [aiResult.chunks_added || 0, 'indexed', document.id]
+           SET chunks_count = $1, status = $2, processed_at = CURRENT_TIMESTAMP,
+               summary = $3, sentiment = $4, context = $5
+           WHERE id = $6`,
+          [
+            aiResult.chunks_added || 0,
+            'indexed',
+            aiResult.summary || null,
+            aiResult.sentiment || null,
+            JSON.stringify(aiResult.context || []), // context is an array, store as JSON
+            document.id
+          ]
         );
 
         // Store chunks in database
@@ -132,10 +140,9 @@ export class DocumentService {
   async getDocumentById(documentId: string, userId: string) {
     const result = await db.query(
       `SELECT d.*, 
-              (SELECT json_agg(json_build_object('text', dc.text_content, 'index', dc.chunk_index))
+              (SELECT json_agg(json_build_object('text', dc.text_content, 'index', dc.chunk_index) ORDER BY dc.chunk_index)
                FROM document_chunks dc
-               WHERE dc.document_id = d.id
-               ORDER BY dc.chunk_index) as chunks
+               WHERE dc.document_id = d.id) as chunks
        FROM documents d
        WHERE d.id = $1 AND d.user_id = $2`,
       [documentId, userId]
@@ -155,6 +162,9 @@ export class DocumentService {
       status: doc.status,
       chunksCount: doc.chunks_count,
       chunks: doc.chunks || [],
+      summary: doc.summary,
+      sentiment: doc.sentiment,
+      context: doc.context,
       createdAt: doc.created_at,
       processedAt: doc.processed_at
     };

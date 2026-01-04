@@ -33,6 +33,15 @@ export interface Document {
   status: 'pending' | 'processing' | 'indexed' | 'failed'
   createdAt: string
   processedAt?: string
+  summary?: string
+  sentiment?: {
+    label: string
+    score: number
+  }
+  context?: Array<{
+    text: string
+    score: number
+  } | string>
 }
 
 export interface SimilarityCheck {
@@ -54,7 +63,36 @@ export interface SimilarityResult {
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY HIGH' | 'VERY LOW'
   status: string
   results: {
+    summary?: string
     similar_documents: SimilarDocument[]
+    sentiment?: {
+      label: string
+      score: number
+    }
+    context?: Array<{
+      text: string
+      score: number
+    } | string>
+    no_match_report?: {
+      reasoning: string
+      closest_match?: {
+        similarity: number
+        metadata?: {
+          summary?: string
+          sentiment?: {
+            label: string
+            score: number
+          }
+          context?: Array<{
+            text: string
+            score: number
+          } | string>
+          [key: string]: unknown
+        }
+      }
+    }
+    aggregate_score?: number
+    overall_score?: number
   }
   createdAt: string
   completedAt: string
@@ -73,16 +111,46 @@ export interface IngestResponse {
 export interface SimilarDocument {
   documentId: string
   filename: string
-  similarityScore: number
-  matchedChunks: number
+  max_similarity: number
+  overall_score: number
+  matched_chunks: number
   matches: Match[]
+  summary?: string
+  sentiment?: {
+    label: string
+    score: number
+  }
+  context?: Array<{
+    text: string
+    score: number
+  } | string>
+  match_unique_topics: string[]
+  sentiment_contrast: {
+    query: string
+    match: string
+    match_status: string
+  }
+  report?: {
+    thought_process?: string
+    reasoning?: string
+    comparison: {
+      query_unique_topics: string[]
+      match_unique_topics: string[]
+      common_topics: string[]
+      sentiment_contrast: {
+        query: string
+        match: string
+        match_status: string
+      }
+    }
+  }
 }
 
 export interface Match {
-  queryText: string
-  matchedText: string
+  query_text: string
+  matched_text: string
   similarity: number
-  chunkIndex: number
+  chunk_index: number
 }
 
 export interface ApiResponse<T> {

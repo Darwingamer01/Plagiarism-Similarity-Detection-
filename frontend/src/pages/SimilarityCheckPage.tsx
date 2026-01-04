@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { userService } from '../services/userService'
+
 import { useNavigate } from 'react-router-dom'
 import { useDropzone } from 'react-dropzone'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -19,13 +19,8 @@ export default function SimilarityCheckPage() {
 
   const checkMutation = useMutation({
     mutationFn: async () => {
-      // Fetch threshold from backend
-      let threshold = 0.88;
-      try {
-        threshold = await userService.getThreshold();
-      } catch {
-        // fallback to default
-      }
+      // Fixed industry-standard threshold
+      const threshold = 0.70;
       return similarityService.checkSimilarity(file!, threshold, 5);
     },
     onSuccess: (data) => {
@@ -204,7 +199,7 @@ export default function SimilarityCheckPage() {
                   <li>Your document is analyzed and compared against the indexed library</li>
                   <li>AI-powered semantic similarity detection identifies potential matches</li>
                   <li>Results show similarity scores and highlighted matching sections</li>
-                  <li>Adjust threshold for stricter or more lenient detection</li>
+
                 </ul>
               </div>
             </div>

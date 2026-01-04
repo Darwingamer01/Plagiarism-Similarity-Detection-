@@ -55,7 +55,14 @@ export class SimilarityService {
         actualTopK
       );
 
+      // Enrich similar documents with metadata (filenames, summaries) BEFORE saving to DB
+      // This ensures the report persists even if the source documents are later deleted
+      if (aiResult.similar_documents) {
+        aiResult.similar_documents = await this.formatSimilarDocuments(aiResult.similar_documents);
+      }
+
       // Calculate AVERAGE similarity across all documents instead of max
+      // Note: We use the already formatted documents now, which is fine as they retain max_similarity
       const similarDocs = aiResult.similar_documents || [];
       let avgSimilarity = 0;
 
@@ -66,14 +73,14 @@ export class SimilarityService {
         avgSimilarity = totalSimilarity / similarDocs.length;
       }
 
-      const riskLevel = this.calculateRiskLevel(avgSimilarity);
+      const riskLevel = this.calculateRiskLevel(aiResult.overall_score || avgSimilarity);
 
-      // Update similarity check with AVERAGE similarity
+      // Update similarity check with MAX similarity (not average)
       await db.query(
         `UPDATE similarity_checks
          SET max_similarity_score = $1, status = $2, results = $3, completed_at = CURRENT_TIMESTAMP
          WHERE id = $4`,
-        [avgSimilarity, 'completed', JSON.stringify(aiResult), checkId]
+        [aiResult.max_similarity || 0, 'completed', JSON.stringify(aiResult), checkId]
       );
 
       // Clean up uploaded file
@@ -85,8 +92,10 @@ export class SimilarityService {
         checkId,
         queryFilename: file.originalname,
         maxSimilarity: avgSimilarity, // This is actually average now
+        aggregate_score: aiResult.aggregate_score,
+        overall_score: aiResult.overall_score,
         riskLevel,
-        similarDocuments: await this.formatSimilarDocuments(aiResult.similar_documents || [])
+        similarDocuments: aiResult.similar_documents // Already formatted
       };
     } catch (error: any) {
       logger.error('Similarity check error:', error);
@@ -107,14 +116,41 @@ export class SimilarityService {
 
     const check = result.rows[0];
 
+    // Parse results if it's a string (though pg usually handles json types automatically)
+    let results = check.results;
+    if (typeof results === 'string') {
+      try {
+        results = JSON.parse(results);
+      } catch (e) {
+        logger.error('Failed to parse results JSON', e);
+      }
+    }
+
+    // Enrich similar documents with metadata (filenames, IDs) if they exist
+    // Only if they haven't been enriched yet (backward compatibility for old records)
+    if (results && results.similar_documents && Array.isArray(results.similar_documents)) {
+      const needsEnrichment = results.similar_documents.length > 0 && !results.similar_documents[0].filename;
+
+      if (needsEnrichment) {
+        try {
+          results.similar_documents = await this.formatSimilarDocuments(results.similar_documents);
+        } catch (error) {
+          logger.error('Error enriching similar documents in getSimilarityResult:', error);
+          // Fallback to original results if formatting fails
+        }
+      }
+    }
+
     return {
       checkId: check.id,
       queryFilename: check.query_filename,
       threshold: check.similarity_threshold,
       maxSimilarity: check.max_similarity_score,
-      riskLevel: this.calculateRiskLevel(check.max_similarity_score),
+      aggregate_score: results?.aggregate_score,
+      overall_score: results?.overall_score,
+      riskLevel: this.calculateRiskLevel(results?.overall_score || check.max_similarity_score),
       status: check.status,
-      results: check.results,
+      results: results,
       createdAt: check.created_at,
       completedAt: check.completed_at
     };
@@ -132,7 +168,9 @@ export class SimilarityService {
 
     // Get history
     const result = await db.query(
-      `SELECT id, query_filename, similarity_threshold, max_similarity_score, status, created_at, completed_at
+      `SELECT id, query_filename, similarity_threshold, max_similarity_score, status, created_at, completed_at, 
+              COALESCE((results->>'aggregate_score')::float, 0) as aggregate_score,
+              COALESCE((results->>'overall_score')::float, 0) as overall_score
        FROM similarity_checks
        WHERE user_id = $1
        ORDER BY created_at DESC
@@ -146,7 +184,9 @@ export class SimilarityService {
         queryFilename: check.query_filename,
         threshold: check.similarity_threshold,
         maxSimilarity: check.max_similarity_score,
-        riskLevel: this.calculateRiskLevel(check.max_similarity_score),
+        aggregateScore: check.aggregate_score,
+        overallScore: check.overall_score,
+        riskLevel: this.calculateRiskLevel(check.overall_score > 0 ? check.overall_score : check.max_similarity_score),
         status: check.status,
         createdAt: check.created_at,
         completedAt: check.completed_at
@@ -185,7 +225,7 @@ export class SimilarityService {
 
         // Get document details from database
         const result = await db.query(
-          'SELECT id, original_filename FROM documents WHERE id = $1',
+          'SELECT id, original_filename, summary FROM documents WHERE id = $1',
           [doc.document_id]
         );
 
@@ -194,9 +234,12 @@ export class SimilarityService {
           formatted.push({
             documentId: dbDoc.id,
             filename: dbDoc.original_filename,
+            summary: dbDoc.summary, // Include summary
             max_similarity: doc.max_similarity,
+            overall_score: doc.overall_score || 0,
             matched_chunks: doc.matched_chunks || 0,
-            matches: doc.matches || []
+            matches: doc.matches || [],
+            report: doc.report
           });
         } else {
           logger.warn(`Document not found in database: ${doc.document_id}`);
@@ -236,7 +279,7 @@ export class SimilarityService {
 
     const deletedCount = result.rowCount || 0;
     logger.info(`Similarity check history cleared for user: ${userId}, count: ${deletedCount}`);
-    
+
     return { deletedCount };
   }
 }

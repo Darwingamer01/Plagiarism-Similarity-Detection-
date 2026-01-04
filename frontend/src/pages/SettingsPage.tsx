@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
@@ -9,7 +9,6 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Pencil, Copy } from 'lucide-react'
-import { Skeleton } from '../components/ui/skeleton'
 import PageTransition from '../components/layout/PageTransition'
 import {
   AlertDialog,
@@ -20,19 +19,7 @@ import {
 } from '../components/ui/alert-dialog'
 
 export default function SettingsPage() {
-  // Threshold state (default 0.88)
-  const [threshold, setThreshold] = useState(0.88)
-  const [thresholdSaved, setThresholdSaved] = useState(false)
-  const [thresholdLoading, setThresholdLoading] = useState(true)
-    // Fetch threshold on mount
-    useEffect(() => {
-      userService.getThreshold().then((t) => {
-        setThreshold(t)
-        setThresholdLoading(false)
-      }).catch(() => {
-        setThresholdLoading(false)
-      })
-    }, [])
+
   const navigate = useNavigate()
   const { user, setUser } = useAuthStore()
   const [isEditing, setIsEditing] = useState(false)
@@ -109,17 +96,7 @@ export default function SettingsPage() {
     toast.success('API key copied to clipboard!')
   }
 
-  // Handler for saving threshold to backend
-  const handleThresholdSave = async () => {
-    try {
-      await userService.setThreshold(threshold)
-      setThresholdSaved(true)
-      setTimeout(() => setThresholdSaved(false), 2000)
-      toast.success('Threshold updated!')
-    } catch {
-      toast.error('Failed to update threshold')
-    }
-  }
+
 
   return (
     <PageTransition>
@@ -132,7 +109,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Threshold Settings */}
-          {/* Threshold Settings - moved between Profile and API Key cards */}
+        {/* Threshold Settings - moved between Profile and API Key cards */}
         {/* Profile Information Card */}
         <Card>
           <CardHeader>
@@ -197,46 +174,7 @@ export default function SettingsPage() {
         </Card>
 
         {/* Threshold Settings Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Similarity Threshold</CardTitle>
-            <CardDescription>
-              Set the minimum similarity score required to flag a document as plagiarized. Default is <span className="font-semibold">0.88 (88%)</span>.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {thresholdLoading ? (
-              <div className="space-y-4">
-                <Skeleton className="h-6 w-32 mb-2" />
-                <Skeleton className="h-10 w-48" />
-                <Skeleton className="h-8 w-24" />
-              </div>
-            ) : (
-              <>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium">Threshold</label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="range"
-                      min={0.5}
-                      max={0.99}
-                      step={0.01}
-                      value={threshold}
-                      onChange={e => setThreshold(Number(e.target.value))}
-                      className="w-48"
-                    />
-                    <span className="font-semibold text-primary">{(threshold * 100).toFixed(0)}%</span>
-                  </div>
-                  <Button size="sm" className="mt-2 w-fit" onClick={handleThresholdSave}>Save Threshold</Button>
-                  {thresholdSaved && <span className="text-green-600 text-sm">Saved!</span>}
-                </div>
-                <div className="mt-2 text-sm text-muted-foreground">
-                  <strong>What is threshold?</strong> The threshold determines how strict the similarity detection is. A higher threshold (e.g. 95%) means only very similar documents will be flagged, while a lower threshold (e.g. 70%) will flag more loosely related content. Adjust this to balance sensitivity and specificity for your use case.
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+
 
         {/* API Key Management Card */}
         <Card>
@@ -258,7 +196,7 @@ export default function SettingsPage() {
 
         {/* API Key Modal using AlertDialog */}
         <AlertDialog open={showApiKeyModal} onOpenChange={setShowApiKeyModal}>
-          <AlertDialogContent className="max-w-2xl">
+          <AlertDialogContent className="w-[95%] max-w-2xl">
             <AlertDialogHeader>
               <AlertDialogTitle className="text-2xl">Your API Key</AlertDialogTitle>
               <AlertDialogDescription>
@@ -278,6 +216,7 @@ export default function SettingsPage() {
                     size="icon"
                     onClick={copyApiKey}
                     title="Copy to clipboard"
+                    className="shrink-0"
                   >
                     <Copy className="h-4 w-4" />
                   </Button>
@@ -291,8 +230,8 @@ export default function SettingsPage() {
                   <p>
                     Include your API key in the request header when making API calls:
                   </p>
-                  <div className="bg-slate-950 text-slate-50 rounded-md p-4 overflow-x-auto">
-                    <pre className="text-xs font-mono">
+                  <div className="bg-slate-950 text-slate-50 rounded-md p-4">
+                    <pre className="text-xs font-mono whitespace-pre-wrap break-all">
                       {`curl -X POST https://api.example.com/check-similarity \\
   -H "X-API-KEY: ${generatedApiKey}" \\
   -F "file=@document.pdf"`}

@@ -10,6 +10,8 @@ import { toast } from 'react-hot-toast'
 import { LandingHeader } from '../components/layout/LandingHeader'
 import { LandingFooter } from '../components/layout/LandingFooter'
 import { motion } from 'framer-motion'
+import { api } from '../services/api'
+import { AxiosError } from 'axios'
 
 export default function ContactPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -18,11 +20,32 @@ export default function ContactPage() {
         e.preventDefault()
         setIsSubmitting(true)
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500))
+        try {
+            // Get form data
+            const form = e.target as HTMLFormElement
+            const firstName = (form.elements.namedItem('firstName') as HTMLInputElement).value
+            const lastName = (form.elements.namedItem('lastName') as HTMLInputElement).value
+            const email = (form.elements.namedItem('email') as HTMLInputElement).value
+            const message = (form.elements.namedItem('message') as HTMLTextAreaElement).value
 
-        toast.success('Message sent! We will get back to you soon.')
-        setIsSubmitting(false)
+            const response = await api.post('/contact', {
+                firstName,
+                lastName,
+                email,
+                message
+            })
+
+            if (response.data.success) {
+                toast.success('Message sent! We will get back to you soon.')
+                form.reset()
+            }
+        } catch (error) {
+            console.error('Error sending message:', error)
+            const axiosError = error as AxiosError<{ message: string }>
+            toast.error(axiosError.response?.data?.message || 'Failed to send message. Please try again.')
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const containerVariants = {

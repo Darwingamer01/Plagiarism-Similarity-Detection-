@@ -110,16 +110,16 @@ export default function DashboardPage() {
               ) : (
                 stats.recentActivity.slice(0, 5).map((activity: { name: string; timestamp: string; type: string }, index: number) => (
                   <div key={index}>
-                    <div className="flex items-center justify-between py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="flex flex-col">
-                          <span className="font-medium text-sm">{activity.name}</span>
-                          <span className="text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between py-3 gap-3">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-medium text-sm truncate" title={activity.name}>{activity.name}</span>
+                          <span className="text-xs text-muted-foreground truncate">
                             {new Date(activity.timestamp).toLocaleString()}
                           </span>
                         </div>
                       </div>
-                      <Badge variant="secondary" className="font-normal">
+                      <Badge variant="secondary" className="font-normal shrink-0">
                         {activity.type}
                       </Badge>
                     </div>

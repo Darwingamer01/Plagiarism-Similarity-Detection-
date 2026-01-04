@@ -1,3 +1,7 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export const config = {
   node: {
     env: process.env.NODE_ENV || 'development'
@@ -7,12 +11,14 @@ export const config = {
     host: process.env.HOST || '0.0.0.0'
   },
   database: {
-    url: process.env.DATABASE_URL || '',
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432', 10),
-    name: process.env.DB_NAME || 'plagiarism_db',
-    user: process.env.DB_USER || 'plagiarism_user',
-    password: process.env.DB_PASSWORD || 'plagiarism_pass_2024',
+    // Force empty URL to use individual params for local dev
+    // Force empty URL to use individual params for local dev
+    url: '',
+    host: '127.0.0.1', // Force IPv4
+    port: 5433, // Updated to avoid local conflicts
+    name: 'plagiarism_db', // Force local DB name
+    user: 'plagiarism_user', // Force local DB user
+    password: 'plagiarism_pass_2024', // Force local DB password
     pool: {
       min: parseInt(process.env.DB_POOL_MIN || '2', 10),
       max: parseInt(process.env.DB_POOL_MAX || '10', 10)
@@ -33,7 +39,7 @@ export const config = {
   },
   aiService: {
     url: process.env.AI_SERVICE_URL,
-    timeout: parseInt(process.env.AI_SERVICE_TIMEOUT || '60000', 10)
+    timeout: parseInt(process.env.AI_SERVICE_TIMEOUT || '180000', 10)
   },
   upload: {
     dir: process.env.UPLOAD_DIR || './uploads',
@@ -47,7 +53,7 @@ export const config = {
     rateLimitMaxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10)
   },
   cors: {
-    origin: process.env.CORS_ORIGIN,
+    origin: (process.env.CORS_ORIGIN || 'http://localhost:3000') + ',http://localhost:3001',
     credentials: process.env.CORS_CREDENTIALS || 'true'
   },
   logging: {

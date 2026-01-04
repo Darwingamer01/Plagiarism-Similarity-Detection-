@@ -36,7 +36,7 @@ router.post(
   '/ingest',
   authenticate,
   uploadLimiter,
-  upload.array('files', 10),
+  upload.array('files', 1),
   documentController.ingest.bind(documentController)
 );
 
