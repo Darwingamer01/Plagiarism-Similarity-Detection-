@@ -190,6 +190,7 @@ class SimilarityChecker:
                         if doc_id not in document_matches:
                             document_matches[doc_id] = {
                                 'document_id': doc_id,
+                                'filename': meta.get('filename'), # Capture filename
                                 'max_similarity': 0.0,
                                 'matched_chunks': 0,
                                 'matches': []
@@ -210,6 +211,23 @@ class SimilarityChecker:
                         document_matches[doc_id]['matches'].sort(key=lambda x: x['similarity'], reverse=True)
                     matched_query_chunk_indices.add(query_idx)
             
+            # Deduplicate by filename: Keep only the single best match (highest max_similarity) for each filename
+            unique_filename_map = {}
+            for doc_id, data in document_matches.items():
+                fname = data.get('filename')
+                # If filename is missing, fallback to doc_id to treat as unique
+                key = fname if fname else doc_id
+                
+                if key not in unique_filename_map:
+                    unique_filename_map[key] = data
+                else:
+                    # If we found a better version of the same file (higher similarity), replace it
+                    if data['max_similarity'] > unique_filename_map[key]['max_similarity']:
+                        unique_filename_map[key] = data
+            
+            # Update document_matches to only contain the unique best matches
+            document_matches = {d['document_id']: d for d in unique_filename_map.values()}
+
             # Calculate Global Aggregate Score FIRST
             # This represents the total volume of the document that is found in ANY source
             total_query_chunks = len(query_chunks) if len(query_chunks) > 0 else 1
