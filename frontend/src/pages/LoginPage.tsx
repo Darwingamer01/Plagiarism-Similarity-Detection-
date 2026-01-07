@@ -72,7 +72,7 @@ export default function LoginPage() {
       toast.success('Login successful!')
       navigate('/dashboard')
     },
-    onError: (error: any) => {
+    onError: (error: Error & { response?: { data?: { error?: { message?: string }, message?: string } }, message?: string }) => {
       console.error('Login error:', error);
       
       let errorMessage = 'Login failed';
@@ -120,7 +120,7 @@ export default function LoginPage() {
         console.log('Google login response:', result);
       }
     },
-    onError: (error: any) => {
+    onError: (error: Error & { response?: { data?: { error?: { message?: string }, message?: string } }, message?: string }) => {
       console.error('Google login error:', error);
       
       let errorMessage = 'Google login failed';
