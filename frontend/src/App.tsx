@@ -27,6 +27,7 @@ import TermsPage from './pages/TermsPage'
 import PrivacyPage from './pages/PrivacyPage'
 import ContactPage from './pages/ContactPage'
 import FAQPage from './pages/FAQPage'
+import SecurityPage from './pages/SecurityPage'
 
 function App() {
   console.log('App component rendering...')
@@ -51,6 +52,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/documentation" element={<DocumentationPage />} />
+        <Route path="/security" element={<SecurityPage />} />
 
         {/* Protected routes */}
         <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>

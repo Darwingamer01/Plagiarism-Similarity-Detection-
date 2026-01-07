@@ -31,7 +31,8 @@ api.interceptors.response.use(
     const originalRequest = error.config as typeof error.config & { _retry?: boolean }
 
     // Handle 401 errors (token expired)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // specific check for login url to avoid infinite loops or wrong error handling
+    if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/login')) {
       originalRequest._retry = true
 
       try {

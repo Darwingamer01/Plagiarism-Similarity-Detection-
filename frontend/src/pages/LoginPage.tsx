@@ -1,16 +1,4 @@
-// Removed unused import
 
-// Removed unused GoogleLoginResponse type
-// Type guard for error with response structure
-function isAxiosErrorWithMessage(error: unknown): error is { response: { data: { error?: { message?: string } } } } {
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    'response' in error &&
-    typeof (error as { response?: unknown }).response === 'object' &&
-    (error as { response: { data?: unknown } }).response.data !== undefined
-  );
-}
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
@@ -84,15 +72,21 @@ export default function LoginPage() {
       toast.success('Login successful!')
       navigate('/dashboard')
     },
-    onError: (error: unknown) => {
-      if (
-        isAxiosErrorWithMessage(error) &&
-        typeof error.response.data.error?.message === 'string'
-      ) {
-        toast.error(error.response.data.error.message);
-      } else {
-        toast.error('Login failed');
+    onError: (error: any) => {
+      console.error('Login error:', error);
+      
+      let errorMessage = 'Login failed';
+      
+      // Try to extract specific error message from backend
+      if (error.response?.data?.error?.message) {
+        errorMessage = error.response.data.error.message;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
+      
+      toast.error(errorMessage);
     },
   })
 
@@ -126,15 +120,20 @@ export default function LoginPage() {
         console.log('Google login response:', result);
       }
     },
-    onError: (error: unknown) => {
-      if (
-        isAxiosErrorWithMessage(error) &&
-        typeof error.response.data.error?.message === 'string'
-      ) {
-        toast.error(error.response.data.error.message);
-      } else {
-        toast.error('Google login failed');
+    onError: (error: any) => {
+      console.error('Google login error:', error);
+      
+      let errorMessage = 'Google login failed';
+      
+      if (error.response?.data?.error?.message) {
+        errorMessage = error.response.data.error.message;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
       }
+      
+      toast.error(errorMessage);
     },
   })
 

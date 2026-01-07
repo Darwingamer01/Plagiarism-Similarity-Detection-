@@ -9,10 +9,14 @@ export class EmailService {
             logger.info(`[DEV] Verification OTP for ${email}: ${otp}`);
 
             const apiKey = process.env.SENDGRID_API_KEY;
-            if (!apiKey) {
-                logger.error('SENDGRID_API_KEY is not defined');
-                return false;
+            
+            // Mock Mode: If no valid API key, log and return success
+            if (!apiKey || !apiKey.startsWith('SG.')) {
+                logger.info(`[MOCK EMAIL] Verification Email to: ${email}`);
+                logger.info(`[MOCK EMAIL] OTP: ${otp}`);
+                return true;
             }
+
             sgMail.setApiKey(apiKey);
 
             const msg = {
@@ -120,9 +124,18 @@ export class EmailService {
         }
     }
     async sendContactFormEmail(name: string, email: string, message: string) {
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
+        const apiKey = process.env.SENDGRID_API_KEY;
+        const senderEmail = process.env.SENDGRID_SENDER_EMAIL || 'no-reply@plagiarism-detection.com';
 
-        const senderEmail = process.env.SENDGRID_SENDER_EMAIL as string;
+        // Mock Mode: If no valid API key, log and return success
+        if (!apiKey || !apiKey.startsWith('SG.')) {
+            logger.info(`[MOCK EMAIL] Contact Form Message`);
+            logger.info(`[MOCK EMAIL] From: ${name} <${email}>`);
+            logger.info(`[MOCK EMAIL] Message: ${message}`);
+            return true;
+        }
+
+        sgMail.setApiKey(apiKey);
 
         // Plain text version is crucial for spam filters
         const textContent = `
@@ -139,7 +152,7 @@ Sent from Plagiarism Detection Platform
         `.trim();
 
         const msg = {
-            to: senderEmail || 'utkarsh11980@gmail.com',
+            to: senderEmail,
             from: {
                 email: senderEmail,
                 name: 'App Notification' // Neutral, non-marketing name

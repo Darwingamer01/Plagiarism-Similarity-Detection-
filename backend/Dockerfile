@@ -11,7 +11,10 @@ RUN npm install && \
     npm cache clean --force
 
 # Copy source code
-COPY . .
+COPY tsconfig.json ./
+COPY docker-entrypoint.sh ./
+COPY src ./src
+COPY migrations ./migrations
 
 # Build TypeScript
 RUN npm run build

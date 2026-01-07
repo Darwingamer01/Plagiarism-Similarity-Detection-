@@ -13,12 +13,12 @@ export const config = {
   database: {
     // Force empty URL to use individual params for local dev
     // Force empty URL to use individual params for local dev
-    url: '',
-    host: '127.0.0.1', // Force IPv4
-    port: 5433, // Updated to avoid local conflicts
-    name: 'plagiarism_db', // Force local DB name
-    user: 'plagiarism_user', // Force local DB user
-    password: 'plagiarism_pass_2024', // Force local DB password
+    url: process.env.DATABASE_URL || '',
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: parseInt(process.env.DB_PORT || '5432', 10),
+    name: process.env.DB_NAME || 'plagiarism_db',
+    user: process.env.DB_USER || 'plagiarism_user',
+    password: process.env.DB_PASSWORD || 'plagiarism_pass_2024',
     pool: {
       min: parseInt(process.env.DB_POOL_MIN || '2', 10),
       max: parseInt(process.env.DB_POOL_MAX || '10', 10)
@@ -63,5 +63,9 @@ export const config = {
   api: {
     prefix: process.env.API_PREFIX || '/api',
     version: process.env.API_VERSION || 'v1'
+  },
+  email: {
+    sendGridApiKey: process.env.SENDGRID_API_KEY,
+    senderEmail: process.env.SENDGRID_SENDER_EMAIL || 'no-reply@plagiarism-detection.com'
   }
 };

@@ -9,28 +9,28 @@ import { Button } from '../components/ui/button'
 
 const faqs = [
     {
-        question: "How does the plagiarism detection work?",
-        answer: "Our system chops your text into small 'chunks' and creates unique digital fingerprints (hashes) for each. We then compare these fingerprints against our massive database of web content and academic papers using a high-speed Vector Database. This allows us to find matches even if a few words are changed."
+        question: "How does the similarity detection work?",
+        answer: "Our system chops your text into small 'chunks' and creates unique digital fingerprints (vector embeddings) for each. We then compare these fingerprints against your own private document database using high-speed FAISS vector search. This matches semantic meaning, not just exact words."
+    },
+    {
+        question: "Does this scan the open internet?",
+        answer: "No. This tool is designed for private, internal use. It compares documents against *your* already uploaded repository. This ensures maximum privacy for sensitive internal documents that should never be exposed to external web scraping."
     },
     {
         question: "Is my data check secure?",
-        answer: "Yes, absolutely. We prioritize your privacy. We use industry-standard encryption for data in transit and at rest. Your documents are processed in memory for the scan and are NOT added to our public database."
+        answer: "Yes, absolutely. We prioritize your privacy. We use industry-standard encryption for data in transit and at rest. Your documents are analyzed within your private infrastructure and embeddings are stored securely."
     },
     {
         question: "What file formats do you support?",
-        answer: "We currently support .txt (plain text) and pasting text directly. PDF and Word document support is being actively rolled out."
+        answer: "We currently support .txt (plain text), .pdf, and .docx (Word) documents."
     },
     {
         question: "Do you detect AI-generated content?",
-        answer: "AI Detection is currently in *Beta* development. We are training our own models on the latest LLM outputs (GPT-4, Claude 3) to give you a probability score, but this feature is experimental."
-    },
-    {
-        question: "How do I upgrade my plan?",
-        answer: "You can view our pricing tiers in the dashboard. We offer 'Pay as you go' credits so you only pay for what you scan."
+        answer: "Our system focuses on *similarity* between documents. While we analyze sentiment and context, we are primarily a similarity checking tool, not an AI-generation detector."
     },
     {
         question: "Can I use the API for my own application?",
-        answer: "Yes! We expose the exact same API that our dashboard uses. You can generate an API Key in your settings and start sending text for analysis programmatically."
+        answer: "Yes! We expose the exact same API that our dashboard uses. You can generate an API Key in your settings (coming soon) and start sending text for analysis programmatically."
     }
 ]
 
