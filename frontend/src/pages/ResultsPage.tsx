@@ -1,15 +1,84 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { SimilarDocument, Match } from '../types'
 import { useQuery } from '@tanstack/react-query'
 import { similarityService } from '../services/similarityService'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
-import { Sparkles, AlignLeft, ArrowLeft, ArrowDown, AlertTriangle, CheckCircle2, BarChart3, ShieldCheck } from 'lucide-react'
+import { Sparkles, AlignLeft, ArrowLeft, ArrowDown, AlertTriangle, CheckCircle2, BarChart3, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react'
 import { Skeleton } from '../components/ui/skeleton'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
 import { Separator } from '../components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { cn } from '../lib/utils'
+
+function MatchesList({ matches }: { matches: Match[] }) {
+    const [showAll, setShowAll] = useState(false);
+    
+    // Deduplicate matches based on query_text to avoid repeating checks on the same sentence
+    // This addresses the user request "no just repeating chunks"
+    const uniqueMatches = matches.filter((match, index, self) =>
+        index === self.findIndex((m) => (
+            m.query_text === match.query_text
+        ))
+    );
+
+    const visibleMatches = showAll ? uniqueMatches : uniqueMatches.slice(0, 3);
+    const hiddenCount = uniqueMatches.length - 3;
+
+    return (
+        <div className="space-y-4">
+            <div className="grid gap-3">
+                {visibleMatches.map((match, i) => (
+                    <div key={i} className="flex flex-col md:grid md:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/10 text-sm relative animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="space-y-1">
+                            <span className="text-[10px] uppercase font-bold text-muted-foreground">Your Text</span>
+                            <p className="font-mono text-xs leading-relaxed bg-background p-2 rounded border break-words whitespace-pre-wrap">{match.query_text}</p>
+                        </div>
+
+                        {/* Mobile Arrow Separator */}
+                        <div className="flex justify-center md:hidden text-muted-foreground/50">
+                            <ArrowDown className="h-4 w-4" />
+                        </div>
+
+                        <div className="space-y-1">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] uppercase font-bold text-muted-foreground">Matched Text</span>
+                                <span className={cn("text-[10px] font-bold", match.similarity > 0.9 ? "text-red-600" : "text-orange-600")}>
+                                    {(match.similarity * 100).toFixed(0)}% Match
+                                </span>
+                            </div>
+                            <p className="font-mono text-xs leading-relaxed bg-yellow-50/50 dark:bg-yellow-900/10 p-2 rounded border border-yellow-200 dark:border-yellow-900/30 break-words whitespace-pre-wrap">
+                                {match.matched_text}
+                            </p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            {uniqueMatches.length > 3 && (
+                <div className="flex justify-center">
+                    <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setShowAll(!showAll)}
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                        {showAll ? (
+                            <>
+                                <ChevronUp className="h-4 w-4 mr-2" /> Show Less
+                            </>
+                        ) : (
+                            <>
+                                <ChevronDown className="h-4 w-4 mr-2" /> View {hiddenCount} more match{hiddenCount !== 1 ? 'es' : ''}
+                            </>
+                        )}
+                    </Button>
+                </div>
+            )}
+        </div>
+    )
+}
 
 export default function ResultsPage() {
     const navigate = useNavigate();
@@ -385,37 +454,21 @@ export default function ResultsPage() {
                                         <AlignLeft className="h-4 w-4" /> Relevant Text Matches
                                     </h5>
                                     <div className="grid gap-3">
-                                        {doc.matches.slice(0, 3).map((match: Match, i: number) => (
-                                            <div key={i} className="flex flex-col md:grid md:grid-cols-2 gap-4 p-4 rounded-lg border bg-muted/10 text-sm relative">
-                                                <div className="space-y-1">
-                                                    <span className="text-[10px] uppercase font-bold text-muted-foreground">Your Text</span>
-                                                    <p className="font-mono text-xs leading-relaxed bg-background p-2 rounded border break-words whitespace-pre-wrap">{match.query_text}</p>
-                                                </div>
-
-                                                {/* Mobile Arrow Separator */}
-                                                <div className="flex justify-center md:hidden text-muted-foreground/50">
-                                                    <ArrowDown className="h-4 w-4 animate-bounce duration-1000" />
-                                                </div>
-
-                                                <div className="space-y-1">
-                                                    <div className="flex justify-between items-center">
-                                                        <span className="text-[10px] uppercase font-bold text-muted-foreground">Matched Text</span>
-                                                        <span className="text-[10px] font-bold text-primary">{(match.similarity * 100).toFixed(0)}% Match</span>
-                                                    </div>
-                                                    <p className="font-mono text-xs leading-relaxed bg-yellow-50/50 dark:bg-yellow-900/10 p-2 rounded border border-yellow-200 dark:border-yellow-900/30 break-words whitespace-pre-wrap">
-                                                        {match.matched_text}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))}
+                                        {/* Use a state if you want independent pagination per card, 
+                                            but since this is mapped, we'll implement a simple show more/less component or logic inline.
+                                            For simplicity in this file without refactoring into a sub-component, 
+                                            we will show only the uniquely best matches and limit them. 
+                                        */}
+                                        <MatchesList matches={doc.matches} />
                                     </div>
                                 </div>
                             )}
                         </CardContent>
                     </Card>
                 ))}
-
             </div>
         </div>
     )
 }
+
+

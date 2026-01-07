@@ -205,6 +205,9 @@ class SimilarityChecker:
                         })
                 
                 if has_match:
+                    # Sort matches by similarity descending to show best matches first
+                    if doc_id in document_matches:
+                        document_matches[doc_id]['matches'].sort(key=lambda x: x['similarity'], reverse=True)
                     matched_query_chunk_indices.add(query_idx)
             
             # Calculate Global Aggregate Score FIRST
