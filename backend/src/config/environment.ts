@@ -10,6 +10,8 @@ export const config = {
     port: parseInt(process.env.PORT || '8000', 10),
     host: process.env.HOST || '0.0.0.0'
   },
+  // Force empty URL to use individual params for local dev
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
   database: {
     // Force empty URL to use individual params for local dev
     // Force empty URL to use individual params for local dev

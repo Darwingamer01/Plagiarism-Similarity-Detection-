@@ -1,6 +1,7 @@
 
 import { logger } from '../utils/logger';
 import sgMail from '@sendgrid/mail';
+import { config } from '../config/environment';
 
 export class EmailService {
     async sendVerificationEmail(email: string, otp: string) {
@@ -56,7 +57,7 @@ export class EmailService {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY as string);
 
         // Construct the reset password link for the deployed frontend
-        const resetLink = `https://plagiarism-similarity-detection.vercel.app/reset-password?token=${token}`;
+        const resetLink = `${config.frontendUrl}/reset-password?token=${token}`;
 
         const msg = {
             to: email,
