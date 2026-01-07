@@ -38,6 +38,7 @@ export interface Document {
     label: string
     score: number
   }
+  context?: Array<{
     text: string
     score: number
   } | string>
