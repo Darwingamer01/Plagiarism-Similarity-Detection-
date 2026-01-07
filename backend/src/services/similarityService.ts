@@ -12,47 +12,58 @@ export class SimilarityService {
     topK: number = 5
   ) {
     try {
-      // Get total document count for this user to compare against ALL documents
+      // Get total document count globally to compare against ALL documents
       const countResult = await db.query(
-        'SELECT COUNT(*) FROM documents WHERE user_id = $1 AND status = $2',
-        [userId, 'indexed']
+        'SELECT COUNT(*) FROM documents WHERE status = $1',
+        ['indexed']
       );
       const totalDocs = parseInt(countResult.rows[0].count);
+      const topKValue = Math.max(totalDocs, topK);
 
-      if (totalDocs === 0) {
-        // Clean up uploaded file
-        deleteFile(file.path);
-        logger.info('No documents in database to compare to.');
-        return {
-          checkId: null,
-          queryFilename: file.originalname,
-          maxSimilarity: 0,
-          riskLevel: 'N/A',
-          similarDocuments: [],
-          message: 'No documents in database to compare to.'
-        };
-      }
-
-      // Set topK to total documents to get ALL comparisons
-      const actualTopK = Math.max(totalDocs, topK);
-
-      // Create similarity check record
+      // Create similarity check record immediately
       const checkResult = await db.query(
         `INSERT INTO similarity_checks (user_id, query_filename, similarity_threshold, status)
          VALUES ($1, $2, $3, $4)
          RETURNING id`,
         [userId, file.originalname, threshold, 'processing']
       );
-
       const checkId = checkResult.rows[0].id;
 
-      // Send to AI service with actualTopK to get all documents
+      if (totalDocs === 0) {
+        // Clean up uploaded file
+        deleteFile(file.path);
+        logger.info('No documents in database to compare to.');
+        
+        const emptyResult = {
+          checkId,
+          queryFilename: file.originalname,
+          maxSimilarity: 0,
+          riskLevel: 'LOW', // Default to low risk if no matches
+          similarDocuments: [],
+          message: 'No documents in database to compare to.',
+          no_match_report: {
+              reasoning: "The system database is currently empty. No documents were found to compare against.",
+          }
+        };
+
+        // Update check record
+        await db.query(
+          `UPDATE similarity_checks
+           SET max_similarity_score = 0, status = 'completed', results = $1, completed_at = CURRENT_TIMESTAMP
+           WHERE id = $2`,
+          [JSON.stringify(emptyResult), checkId]
+        );
+
+        return emptyResult;
+      }
+
+      // Send to AI service
       const aiResult = await aiService.checkSimilarity(
         file.path,
         file.originalname,
         userId,
         threshold,
-        actualTopK
+        topKValue
       );
 
       // Enrich similar documents with metadata (filenames, summaries) BEFORE saving to DB

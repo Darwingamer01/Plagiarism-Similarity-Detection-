@@ -4,7 +4,7 @@ import { SimilarDocument, Match } from '../types'
 import { useQuery } from '@tanstack/react-query'
 import { similarityService } from '../services/similarityService'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
-import { Sparkles, AlignLeft, ArrowLeft, ArrowDown, AlertTriangle, CheckCircle2, BarChart3, ShieldCheck, ChevronDown, ChevronUp } from 'lucide-react'
+import { Sparkles, AlignLeft, ArrowLeft, ArrowDown, AlertTriangle, CheckCircle2, BarChart3, ShieldCheck, ChevronDown, ChevronUp, Database, Upload } from 'lucide-react'
 import { Skeleton } from '../components/ui/skeleton'
 import { Button } from '../components/ui/button'
 import { Badge } from '../components/ui/badge'
@@ -194,8 +194,37 @@ export default function ResultsPage() {
             {/* Main Content Area */}
             <div className="grid gap-8">
 
+                {/* Scenario 0: Empty Database - Specific Prompt */}
+                {results?.message?.includes('No documents in database') && (
+                    <Card className="border-l-4 border-l-amber-500 overflow-hidden shadow-md transition-all hover:shadow-lg duration-300">
+                        <CardHeader className="bg-gradient-to-r from-amber-50 to-transparent dark:from-amber-950/20 pb-4 border-b">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-full">
+                                    <Database className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                                </div>
+                                <div>
+                                    <CardTitle className="text-xl font-bold text-amber-900 dark:text-amber-100">System Database Empty</CardTitle>
+                                    <CardDescription className="text-amber-800/80 dark:text-amber-200/70 mt-1">
+                                        We couldn't perform a similarity check because the reference database is empty.
+                                    </CardDescription>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="pt-6 space-y-4">
+                             <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground bg-muted/30 p-5 rounded-xl border border-dashed leading-relaxed">
+                                 The system needs at least one reference document in the database to compare against. Please upload a document to the Community or your private collection to initialize the database.
+                             </div>
+                             <div className="flex justify-end">
+                                <Button onClick={() => navigate('/upload')} className="bg-amber-600 hover:bg-amber-700 text-white">
+                                    <Upload className="mr-2 h-4 w-4" /> Upload Reference Document
+                                </Button>
+                             </div>
+                        </CardContent>
+                    </Card>
+                )}
+
                 {/* Scenario 1: No Matching Documents (Unique Content) */}
-                {results?.similar_documents?.length === 0 && results?.no_match_report && (
+                {!results?.message?.includes('No documents in database') && results?.similar_documents?.length === 0 && results?.no_match_report && (
                     <Card className="border-l-4 border-l-emerald-500 overflow-hidden shadow-md transition-all hover:shadow-lg duration-300">
                         <CardHeader className="bg-gradient-to-r from-emerald-50 to-transparent dark:from-emerald-950/20 pb-4 border-b">
                             <div className="flex items-center gap-3">

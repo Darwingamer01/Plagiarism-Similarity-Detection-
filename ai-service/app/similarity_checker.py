@@ -166,8 +166,8 @@ class SimilarityChecker:
                     meta = self.metadata[idx]
                     
                     # Only compare against documents uploaded by the current user
-                    if user_id is not None and meta.get('user_id') != user_id:
-                        continue
+                    # if user_id is not None and meta.get('user_id') != user_id:
+                    #     continue
                     
                     # Track absolute best single chunk match for reporting
                     if user_id is None or meta.get('user_id') == user_id:

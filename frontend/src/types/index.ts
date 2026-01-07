@@ -63,6 +63,7 @@ export interface SimilarityResult {
   riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'VERY HIGH' | 'VERY LOW'
   status: string
   results: {
+    message?: string
     summary?: string
     similar_documents: SimilarDocument[]
     sentiment?: {
