@@ -68,7 +68,8 @@ export class DocumentController {
         value.page,
         value.limit,
         value.sort,
-        value.order
+        value.order,
+        req.query.scope as 'mine' | 'others' | 'all'
       );
 
       res.status(200).json({

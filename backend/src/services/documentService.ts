@@ -96,7 +96,7 @@ export class DocumentService {
     return results;
   }
 
-  async getDocuments(userId: string, page: number = 1, limit: number = 20, sort: string = 'created_at', order: string = 'desc') {
+  async getDocuments(userId: string, page: number = 1, limit: number = 20, sort: string = 'created_at', order: string = 'desc', scope: 'mine' | 'others' | 'all' = 'all') {
     const offset = (page - 1) * limit;
     
     // Validate sort column to prevent SQL injection
@@ -104,28 +104,73 @@ export class DocumentService {
     const sortColumn = allowedSortColumns.includes(sort) ? sort : 'created_at';
     const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
-    // Get total count of unique documents
-    const countResult = await db.query(
-      'SELECT COUNT(DISTINCT original_filename) FROM documents'
-    );
+    let countQuery = '';
+    let countParams: any[] = [];
+    let dataQuery = '';
+    let dataParams: any[] = [];
+
+    if (scope === 'mine') {
+      // Simple filtered query for user's own documents
+      countQuery = 'SELECT COUNT(*) FROM documents WHERE user_id = $1';
+      countParams = [userId];
+
+      dataQuery = `
+        SELECT id, filename, original_filename, file_type, file_size, status, chunks_count, created_at, processed_at
+        FROM documents
+        WHERE user_id = $1
+        ORDER BY ${sortColumn} ${sortOrder}
+        LIMIT $2 OFFSET $3
+      `;
+      dataParams = [userId, limit, offset];
+
+    } else if (scope === 'others') {
+      // Query for documents NOT owned by user, deduplicated by filename
+      countQuery = 'SELECT COUNT(DISTINCT original_filename) FROM documents WHERE user_id != $1';
+      countParams = [userId];
+
+      dataQuery = `
+        WITH UniqueDocs AS (
+          SELECT DISTINCT ON (original_filename) 
+            id, original_filename, created_at
+          FROM documents
+          WHERE user_id != $1
+          ORDER BY original_filename, created_at DESC
+        )
+        SELECT d.id, d.filename, d.original_filename, d.file_type, d.file_size, d.status, d.chunks_count, d.created_at, d.processed_at
+        FROM documents d
+        INNER JOIN UniqueDocs ud ON d.id = ud.id
+        ORDER BY d.${sortColumn} ${sortOrder}
+        LIMIT $2 OFFSET $3
+      `;
+      dataParams = [userId, limit, offset];
+
+    } else {
+      // 'all' - existing global logic (deduplicated across everyone)
+      countQuery = 'SELECT COUNT(DISTINCT original_filename) FROM documents';
+      countParams = [];
+
+      dataQuery = `
+        WITH UniqueDocs AS (
+          SELECT DISTINCT ON (original_filename) 
+            id, original_filename, created_at
+          FROM documents
+          ORDER BY original_filename, created_at DESC
+        )
+        SELECT d.id, d.filename, d.original_filename, d.file_type, d.file_size, d.status, d.chunks_count, d.created_at, d.processed_at
+        FROM documents d
+        INNER JOIN UniqueDocs ud ON d.id = ud.id
+        ORDER BY d.${sortColumn} ${sortOrder}
+        LIMIT $1 OFFSET $2
+      `;
+      dataParams = [limit, offset];
+    }
+
+    // Execute Count Query
+    const countResult = await db.query(countQuery, countParams);
     const total = parseInt(countResult.rows[0].count);
 
-    // Get unique documents (deduplicated by original_filename)
-    // We use a CTE to find the latest ID for each original_filename, then query details
-    const result = await db.query(
-      `WITH UniqueDocs AS (
-         SELECT DISTINCT ON (original_filename) 
-           id, original_filename, created_at
-         FROM documents
-         ORDER BY original_filename, created_at DESC
-       )
-       SELECT d.id, d.filename, d.original_filename, d.file_type, d.file_size, d.status, d.chunks_count, d.created_at, d.processed_at
-       FROM documents d
-       INNER JOIN UniqueDocs ud ON d.id = ud.id
-       ORDER BY d.${sortColumn} ${sortOrder}
-       LIMIT $1 OFFSET $2`,
-      [limit, offset]
-    );
+    // Execute Data Query
+    const result = await db.query(dataQuery, dataParams);
 
     return {
       documents: result.rows.map(doc => ({
@@ -136,7 +181,8 @@ export class DocumentService {
         chunksCount: doc.chunks_count,
         status: doc.status,
         createdAt: doc.created_at,
-        processedAt: doc.processed_at
+        processedAt: doc.processed_at,
+        isOwner: scope === 'mine' // Helper flag for frontend to know if delete should be allowed (though scoped list implies it)
       })),
       pagination: {
         page,

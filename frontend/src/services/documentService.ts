@@ -1,5 +1,5 @@
 import api from './api'
-import { Document, PaginationParams, DocumentsResponse, IngestResponse } from '../types'
+import { Document, IngestResponse } from '../types'
 
 export const documentService = {
   async ingestDocuments(files: File[]): Promise<IngestResponse> {
@@ -16,8 +16,14 @@ export const documentService = {
     return response.data.data
   },
 
-  async getDocuments(params: PaginationParams = {}): Promise<DocumentsResponse> {
-    const response = await api.get('/documents', { params })
+  getDocuments: async ({ page = 1, limit = 20, sort = 'created_at', order = 'desc', scope = 'all' }: { 
+    page?: number; 
+    limit?: number; 
+    sort?: string; 
+    order?: 'asc' | 'desc';
+    scope?: 'mine' | 'others' | 'all';
+  }) => {
+    const response = await api.get(`/documents?page=${page}&limit=${limit}&sort=${sort}&order=${order}&scope=${scope}`)
     return response.data.data
   },
 

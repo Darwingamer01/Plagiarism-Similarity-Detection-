@@ -81,10 +81,11 @@ export const validateSimilarityCheck = Joi.object({
 });
 
 export const validatePagination = Joi.object({
-  page: Joi.number().min(1).default(1),
-  limit: Joi.number().min(1).max(100).default(20),
-  sort: Joi.string().valid('created_at', 'updated_at', 'filename', 'file_size').default('created_at'),
-  order: Joi.string().valid('asc', 'desc').default('desc')
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(100).default(20),
+  sort: Joi.string().valid('created_at', 'updated_at', 'filename', 'file_size', 'status').default('created_at'),
+  order: Joi.string().valid('asc', 'desc').default('desc'),
+  scope: Joi.string().valid('mine', 'others', 'all').default('all')
 });
 
 export const validateUUID = Joi.object({
