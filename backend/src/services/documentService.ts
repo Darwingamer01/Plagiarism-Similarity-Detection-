@@ -98,23 +98,33 @@ export class DocumentService {
 
   async getDocuments(userId: string, page: number = 1, limit: number = 20, sort: string = 'created_at', order: string = 'desc') {
     const offset = (page - 1) * limit;
-    const orderClause = `${sort} ${order.toUpperCase()}`;
+    
+    // Validate sort column to prevent SQL injection
+    const allowedSortColumns = ['created_at', 'filename', 'file_size', 'status'];
+    const sortColumn = allowedSortColumns.includes(sort) ? sort : 'created_at';
+    const sortOrder = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
 
-    // Get total count
+    // Get total count of unique documents
     const countResult = await db.query(
-      'SELECT COUNT(*) FROM documents WHERE user_id = $1',
-      [userId]
+      'SELECT COUNT(DISTINCT original_filename) FROM documents'
     );
     const total = parseInt(countResult.rows[0].count);
 
-    // Get documents
+    // Get unique documents (deduplicated by original_filename)
+    // We use a CTE to find the latest ID for each original_filename, then query details
     const result = await db.query(
-      `SELECT id, filename, original_filename, file_type, file_size, status, chunks_count, created_at, processed_at
-       FROM documents
-       WHERE user_id = $1
-       ORDER BY ${orderClause}
-       LIMIT $2 OFFSET $3`,
-      [userId, limit, offset]
+      `WITH UniqueDocs AS (
+         SELECT DISTINCT ON (original_filename) 
+           id, original_filename, created_at
+         FROM documents
+         ORDER BY original_filename, created_at DESC
+       )
+       SELECT d.id, d.filename, d.original_filename, d.file_type, d.file_size, d.status, d.chunks_count, d.created_at, d.processed_at
+       FROM documents d
+       INNER JOIN UniqueDocs ud ON d.id = ud.id
+       ORDER BY d.${sortColumn} ${sortOrder}
+       LIMIT $1 OFFSET $2`,
+      [limit, offset]
     );
 
     return {
