@@ -196,12 +196,16 @@ export class DocumentService {
   async getDocumentById(documentId: string, userId: string) {
     const result = await db.query(
       `SELECT d.*, 
-              (SELECT json_agg(json_build_object('text', dc.text_content, 'index', dc.chunk_index) ORDER BY dc.chunk_index)
+              (SELECT json_agg(json_build_object(
+                  'id', dc.id, 
+                  'content', dc.text_content, 
+                  'chunk_index', dc.chunk_index
+               ) ORDER BY dc.chunk_index)
                FROM document_chunks dc
                WHERE dc.document_id = d.id) as chunks
        FROM documents d
-       WHERE d.id = $1 AND d.user_id = $2`,
-      [documentId, userId]
+       WHERE d.id = $1`,
+      [documentId]
     );
 
     if (result.rows.length === 0) {
@@ -222,7 +226,8 @@ export class DocumentService {
       sentiment: doc.sentiment,
       context: doc.context,
       createdAt: doc.created_at,
-      processedAt: doc.processed_at
+      processedAt: doc.processed_at,
+      isOwner: doc.user_id === userId // Add ownership flag
     };
   }
 
