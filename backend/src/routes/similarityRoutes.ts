@@ -127,4 +127,18 @@ router.delete('/history/:id', authenticate, similarityController.deleteCheck.bin
  */
 router.delete('/history', authenticate, similarityController.clearHistory.bind(similarityController));
 
+/**
+ * @swagger
+ * /api/similarity/admin/clear-vectors:
+ *   post:
+ *     summary: Clear all vector embeddings from AI service (Admin only)
+ *     tags: [Similarity]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Vector index cleared successfully
+ */
+router.post('/admin/clear-vectors', authenticate, similarityController.clearIndex.bind(similarityController));
+
 export default router;

@@ -282,6 +282,9 @@ export class SimilarityService {
 
     return { deletedCount };
   }
+  async clearVectorIndex() {
+    return await aiService.clearVectorIndex();
+  }
 }
 
 export const similarityService = new SimilarityService();

@@ -153,6 +153,20 @@ class AIService {
       throw new AppError('Failed to get AI service stats', 500);
     }
   }
+  async clearVectorIndex(): Promise<any> {
+    try {
+      logger.info('Sending request to clear AI Service vector index');
+      const response = await this.client.post('/admin/clear-index');
+      logger.info('AI Service vector index cleared successfully');
+      return response.data;
+    } catch (error: any) {
+      logger.error('AI Service clear index error:', error.message);
+      if (error.response) {
+        throw new AppError(`AI Service error: ${error.response.data.detail || error.message}`, 500);
+      }
+      throw new AppError('Failed to communicate with AI service', 500);
+    }
+  }
 }
 
 export const aiService = new AIService();

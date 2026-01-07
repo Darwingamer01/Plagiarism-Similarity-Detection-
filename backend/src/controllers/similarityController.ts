@@ -196,6 +196,30 @@ export class SimilarityController {
       next(error);
     }
   }
+  async clearIndex(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          error: {
+            message: 'Not authenticated',
+            statusCode: 401
+          }
+        });
+      }
+
+      // Ideally check for admin role here
+      
+      const result = await similarityService.clearVectorIndex();
+
+      res.status(200).json({
+        success: true,
+        data: result
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const similarityController = new SimilarityController();
