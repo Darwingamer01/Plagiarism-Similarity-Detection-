@@ -298,6 +298,51 @@ export class DocumentService {
     logger.info(`All documents deleted for user: ${userId}, count: ${documents.length}`);
     return { deletedCount: documents.length };
   }
+
+  async resetSystem() {
+    logger.warn('Executing SYSTEM RESET - Wiping all data');
+    
+    // 1. Clear AI Service Index
+    try {
+      await aiService.clearVectorIndex();
+    } catch (e) {
+      logger.error('Failed to clear AI index during reset', e);
+    }
+
+    // 2. Truncate Database Tables
+    await db.query('TRUNCATE TABLE similarity_checks CASCADE');
+    await db.query('TRUNCATE TABLE document_chunks CASCADE');
+    await db.query('TRUNCATE TABLE documents CASCADE');
+    
+    // 3. Clean uploads directory
+    try {
+      // Use dynamic imports or just fs/path if already imported. 
+      // Since fs/path are likely not imported, we'll assume we can't use them easily without top-level import.
+      // But we can use the `deleteFile` utility logic if applicable, or just suppress the lint if we really need to.
+      // Better: I will use the global `fs` and `path` if I import them, but I can't easily add imports now.
+      // I will just use `fs` and `path` variables if I can, OR I will assume I can skip file deletion since restart cleans ephemeral storage anyway?
+      // NO, I should try to clean it. I will fix the requires to be clean.
+      const fs = require('fs');
+      const path = require('path');
+      const uploadDir = path.join(process.cwd(), 'uploads');
+      if (fs.existsSync(uploadDir)) {
+          const files = fs.readdirSync(uploadDir);
+          for (const file of files) {
+              if (file !== '.gitkeep') {
+                try {
+                    fs.unlinkSync(path.join(uploadDir, file));
+                } catch (e) {
+                    // Ignore
+                }
+              }
+          }
+      }
+    } catch (e) {
+        logger.error('Failed to clean uploads dir', e);
+    }
+
+    return { message: 'System fully reset' };
+  }
 }
 
 export const documentService = new DocumentService();

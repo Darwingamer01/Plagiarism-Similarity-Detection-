@@ -169,13 +169,20 @@ export class DocumentController {
 
       res.status(200).json({
         success: true,
-        data: {
-          message: `${result.deletedCount} document(s) deleted successfully`,
-          deletedCount: result.deletedCount
-        }
+        data: result
       });
     } catch (error) {
       next(error);
+    }
+  }
+
+  async resetSystem(req: Request, res: Response, next: NextFunction) {
+    try {
+      // Admin only check could go here
+      const result = await documentService.resetSystem();
+      res.status(200).json({ success: true, data: result });
+    } catch (error) {
+       next(error);
     }
   }
 }

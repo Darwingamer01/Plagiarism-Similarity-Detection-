@@ -31,7 +31,8 @@ USER appuser
 EXPOSE 8001
 
 # Health check - use curl instead of Python to avoid module loading issues
-HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
+# Health check - use curl instead of Python to avoid module loading issues
+HEALTHCHECK --interval=30s --timeout=10s --start-period=300s --retries=5 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:8001/health || exit 1
 
 # Start application

@@ -42,6 +42,20 @@ router.post(
 
 /**
  * @swagger
+ * /api/documents/admin/reset:
+ *   post:
+ *     summary: WIPE ALL DATA (Documents & AI Index)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: System reset complete
+ */
+router.post('/admin/reset', authenticate, documentController.resetSystem.bind(documentController));
+
+/**
+ * @swagger
  * /api/documents:
  *   get:
  *     summary: List user's indexed documents
