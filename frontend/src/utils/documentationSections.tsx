@@ -1,4 +1,4 @@
-import { Book, Code, Shield, FileText, Brain, BarChart } from 'lucide-react'
+import { Book, Shield, FileText } from 'lucide-react'
 
 export const sections = [
     {
