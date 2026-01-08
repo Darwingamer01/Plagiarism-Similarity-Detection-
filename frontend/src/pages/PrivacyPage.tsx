@@ -7,7 +7,8 @@ export default function PrivacyPage() {
     return (
         <div className="min-h-screen flex flex-col bg-background">
             <LandingHeader />
-            <div className="flex-grow pt-24">
+            <div className="flex-grow pt-20">
+                <div className="container mx-auto px-4 md:px-6">
                 <PageTransition>
                     <div className="w-full max-w-[1920px] mx-auto px-4 md:px-8 py-12">
                         <div className="text-center mb-12">
@@ -71,6 +72,7 @@ export default function PrivacyPage() {
                         </div>
                     </div>
                 </PageTransition>
+                </div>
             </div>
             <LandingFooter />
         </div>

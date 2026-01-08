@@ -344,24 +344,24 @@ export default function LandingPage() {
                                             whileTap={{ scale: 0.98 }}
                                             className="group flex items-center justify-between p-3 sm:p-4 rounded-lg bg-black/40 border border-white/5 hover:border-green-500/30 hover:bg-green-500/5 active:bg-green-500/10 transition-all duration-300 cursor-pointer"
                                         >
-                                            <span className="text-gray-300 group-hover:text-white transition-colors text-sm sm:text-base">Encryption at Rest</span>
-                                            <span className="text-green-400 text-xs sm:text-sm font-mono group-hover:scale-110 transition-transform">AES-256</span>
+                                            <span className="text-gray-300 group-hover:text-white transition-colors text-sm sm:text-base">Vector Storage</span>
+                                            <span className="text-green-400 text-xs sm:text-sm font-mono group-hover:scale-110 transition-transform">FAISS Index</span>
                                         </motion.div>
                                         <motion.div 
                                             whileHover={{ x: 5, scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
                                             className="group flex items-center justify-between p-3 sm:p-4 rounded-lg bg-black/40 border border-white/5 hover:border-green-500/30 hover:bg-green-500/5 active:bg-green-500/10 transition-all duration-300 cursor-pointer"
                                         >
-                                            <span className="text-gray-300 group-hover:text-white transition-colors text-sm sm:text-base">Data Isolation</span>
-                                            <span className="text-green-400 text-xs sm:text-sm font-mono group-hover:scale-110 transition-transform">Private VPC</span>
+                                            <span className="text-gray-300 group-hover:text-white transition-colors text-sm sm:text-base">Local Processing</span>
+                                            <span className="text-green-400 text-xs sm:text-sm font-mono group-hover:scale-110 transition-transform">On-Premise</span>
                                         </motion.div>
                                         <motion.div 
                                             whileHover={{ x: 5, scale: 1.02 }}
                                             whileTap={{ scale: 0.98 }}
                                             className="group flex items-center justify-between p-3 sm:p-4 rounded-lg bg-black/40 border border-white/5 hover:border-green-500/30 hover:bg-green-500/5 active:bg-green-500/10 transition-all duration-300 cursor-pointer"
                                         >
-                                            <span className="text-gray-300 group-hover:text-white transition-colors text-sm sm:text-base">Access Control</span>
-                                            <span className="text-green-400 text-xs sm:text-sm font-mono group-hover:scale-110 transition-transform">RBAC Enforced</span>
+                                            <span className="text-gray-300 group-hover:text-white transition-colors text-sm sm:text-base">User Accounts</span>
+                                            <span className="text-green-400 text-xs sm:text-sm font-mono group-hover:scale-110 transition-transform">JWT Auth</span>
                                         </motion.div>
                                     </div>
                                 </div>
