@@ -96,7 +96,7 @@ export default function LandingPage() {
                             className="mt-12 sm:mt-16 md:mt-20 mx-auto w-full max-w-[98%] sm:max-w-[95%] xl:max-w-7xl rounded-lg sm:rounded-xl border border-border/50 bg-card/50 backdrop-blur shadow-xl sm:shadow-2xl overflow-hidden relative group"
                         >
                             <img
-                                src="/dashboard-mockup.png"
+                                src="/dashboard-mockup.webp"
                                 alt="Dashboard Interface"
                                 width={1200}
                                 height={675}

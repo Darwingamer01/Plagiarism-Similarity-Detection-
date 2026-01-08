@@ -7,7 +7,8 @@ import HeaderOnlyLayout from './components/layout/HeaderOnlyLayout'
 import { LoadingSpinner } from './components/ui/loading-spinner'
 
 // Lazy Load Pages
-const LandingPage = lazy(() => import('./pages/LandingPage'))
+// LandingPage is eager loaded for better LCP
+import LandingPage from './pages/LandingPage'
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const RegisterPage = lazy(() => import('./pages/RegisterPage'))
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'))
