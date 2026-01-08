@@ -39,7 +39,7 @@ export function LandingHeader() {
 
                 {/* Mobile Menu Button */}
                 <div className="md:hidden">
-                    <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+                    <Button variant="ghost" size="icon" aria-label="Toggle menu" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
                         {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                     </Button>
                 </div>

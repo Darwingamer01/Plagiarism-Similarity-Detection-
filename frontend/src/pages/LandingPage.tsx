@@ -98,6 +98,9 @@ export default function LandingPage() {
                             <img
                                 src="/dashboard-mockup.png"
                                 alt="Dashboard Interface"
+                                width={1200}
+                                height={675}
+                                fetchPriority="high"
                                 className="w-full h-auto object-cover"
                             />
                             {/* Overlay for depth */}
