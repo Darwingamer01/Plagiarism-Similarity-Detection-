@@ -9,49 +9,49 @@ import { useNavigate } from 'react-router-dom'
 const securityFeatures = [
     {
         icon: <Shield className="h-8 w-8" />,
-        title: "End-to-End Encryption",
-        description: "All data is encrypted in transit using TLS 1.3 and at rest using AES-256 encryption.",
-        badge: "AES-256"
+        title: "Secure Transmission",
+        description: "All data is encrypted in transit using industry-standard TLS protocols to protect your information.",
+        badge: "TLS 1.3"
     },
     {
         icon: <Server className="h-8 w-8" />,
-        title: "Private Infrastructure",
-        description: "Your documents never leave your environment. All processing happens within your isolated instance.",
-        badge: "Self-Hosted"
+        title: "Local Processing",
+        description: "Documents are processed locally within your deployment. Your data stays under your control.",
+        badge: "On-Prem"
     },
     {
         icon: <Eye className="h-8 w-8" />,
-        title: "Zero Data Sharing",
-        description: "We never share, sell, or expose your documents to third parties. Your data remains exclusively yours.",
-        badge: "Zero-Trust"
+        title: "Zero Third-Party Sharing",
+        description: "We never share or sell your data. Your documents are used strictly for similarity detection.",
+        badge: "Private"
     },
     {
         icon: <Key className="h-8 w-8" />,
-        title: "RBAC Access Control",
-        description: "Fine-grained role-based access control ensures only authorized users can access specific documents.",
-        badge: "Enterprise"
+        title: "User Access Control",
+        description: "Strict ownership checks ensure only you can view or manage your uploaded documents.",
+        badge: "Owner-Only"
     },
     {
         icon: <Database className="h-8 w-8" />,
-        title: "Isolated Vector Database",
-        description: "Each organization gets a completely isolated FAISS index. Cross-tenant data leakage is impossible.",
-        badge: "Isolated"
+        title: "Logical Data Separation",
+        description: "Your document vectors are logically isolated via rigorous metadata filtering.",
+        badge: "Segregated"
     },
     {
         icon: <Lock className="h-8 w-8" />,
-        title: "Secure Authentication",
-        description: "JWT-based authentication with refresh tokens, rate limiting, and optional OAuth2/OIDC integration.",
-        badge: "OAuth2"
+        title: "Dual Authentication",
+        description: "Secure login via Google OAuth or email/password with robust JWT session management.",
+        badge: "OAuth + JWT"
     }
 ]
 
 const complianceItems = [
-    "GDPR Compliant Data Handling",
-    "SOC 2 Type II Ready Architecture",
-    "HIPAA Compatible Deployment",
-    "Data Residency Controls",
-    "Audit Logging & Monitoring",
-    "Automatic Session Management"
+    "Strict Data Isolation",
+    "Encrypted Transmission",
+    "Access Control Logs",
+    "Data Residency Options",
+    "Transparent Processing",
+    "User Deletion Rights"
 ]
 
 export default function SecurityPage() {
@@ -230,7 +230,7 @@ export default function SecurityPage() {
                                                 { step: "1", label: "Upload", desc: "TLS 1.3 encrypted transfer" },
                                                 { step: "2", label: "Process", desc: "In-memory only, no disk writes" },
                                                 { step: "3", label: "Vectorize", desc: "Encrypted embedding generation" },
-                                                { step: "4", label: "Store", desc: "AES-256 encrypted at rest" }
+                                                { step: "4", label: "Store", desc: "Secure Database Storage" }
                                             ].map((item, i) => (
                                                 <motion.div
                                                     key={i}
@@ -265,7 +265,7 @@ export default function SecurityPage() {
                             viewport={{ once: true }}
                             className="text-center mb-10 sm:mb-12 md:mb-16"
                         >
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">Compliance Ready</h2>
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">Data Privacy & Control</h2>
                             <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-xs sm:max-w-lg md:max-w-2xl mx-auto px-2">
                                 Our platform is designed to help you meet your regulatory requirements.
                             </p>
