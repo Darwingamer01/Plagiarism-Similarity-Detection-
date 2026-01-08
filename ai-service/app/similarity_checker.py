@@ -115,7 +115,11 @@ class SimilarityChecker:
         user_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
-        Search for similar documents in the index
+        Search for similar documents in the index using weighted mean scoring.
+        
+        Scoring formula (weighted by chunk length):
+        - Per-document: Σ(len(chunk_i) * similarity_i) / Σ(len(chunk_i))
+        - Overall: Σ(len(chunk_i) * similarity_i) / Σ(len(chunk_i)) across all matches
         
         Args:
             query_embeddings: Query embeddings
@@ -130,7 +134,7 @@ class SimilarityChecker:
             if self.index.ntotal == 0:
                 logger.warning("Index is empty, no documents to search")
                 return {
-                    "max_similarity": 0.0,
+                    "overall_score": 0.0,
                     "similar_documents": []
                 }
             
@@ -147,27 +151,25 @@ class SimilarityChecker:
             # similarity = 1 - (distance / 2)
             similarities = 1 - (distances / 2)
             
-            # Group results by document
+            # Group results by document, tracking weighted sums for scoring
             document_matches = {}
             # Keep track of the absolute best match found, even if below threshold, for reporting
             best_match_any_score = None
             best_match_score = -1.0
             
-            # Identify which query chunks had at least one match > threshold
-            matched_query_chunk_indices = set()
+            # For global weighted score calculation
+            global_weighted_sum = 0.0
+            global_weight_sum = 0.0
 
             for query_idx, (query_chunk, query_sims, query_indices) in enumerate(
                 zip(query_chunks, similarities, indices)
             ):
-                has_match = False
+                query_chunk_length = len(query_chunk)
+                
                 for sim, idx in zip(query_sims, query_indices):
                     if idx < 0 or idx >= len(self.metadata):
                         continue
                     meta = self.metadata[idx]
-                    
-                    # Only compare against documents uploaded by the current user
-                    # if user_id is not None and meta.get('user_id') != user_id:
-                    #     continue
                     
                     # Track absolute best single chunk match for reporting
                     if user_id is None or meta.get('user_id') == user_id:
@@ -185,88 +187,82 @@ class SimilarityChecker:
 
                     # threshold check
                     if sim >= threshold:
-                        has_match = True
                         doc_id = meta['document_id']
+                        
+                        # Add to global weighted score
+                        global_weighted_sum += query_chunk_length * float(sim)
+                        global_weight_sum += query_chunk_length
+                        
                         if doc_id not in document_matches:
                             document_matches[doc_id] = {
                                 'document_id': doc_id,
-                                'filename': meta.get('filename'), # Capture filename
-                                'max_similarity': 0.0,
+                                'filename': meta.get('filename'),
                                 'matched_chunks': 0,
-                                'matches': []
+                                'matches': [],
+                                # For weighted mean calculation
+                                'weighted_sum': 0.0,
+                                'weight_sum': 0.0
                             }
-                        if sim > document_matches[doc_id]['max_similarity']:
-                            document_matches[doc_id]['max_similarity'] = float(sim)
+                        
+                        # Update weighted sums for per-document score
+                        document_matches[doc_id]['weighted_sum'] += query_chunk_length * float(sim)
+                        document_matches[doc_id]['weight_sum'] += query_chunk_length
                         document_matches[doc_id]['matched_chunks'] += 1
+                        
                         document_matches[doc_id]['matches'].append({
                             'query_text': query_chunk[:200] + '...' if len(query_chunk) > 200 else query_chunk,
                             'matched_text': meta['chunk_text'][:200] + '...' if len(meta['chunk_text']) > 200 else meta['chunk_text'],
                             'similarity': float(sim),
-                            'chunk_index': meta['chunk_index']
+                            'chunk_index': meta['chunk_index'],
+                            'chunk_length': query_chunk_length
                         })
-                
-                if has_match:
-                    # Sort matches by similarity descending to show best matches first
-                    if doc_id in document_matches:
-                        document_matches[doc_id]['matches'].sort(key=lambda x: x['similarity'], reverse=True)
-                    matched_query_chunk_indices.add(query_idx)
             
-            # Deduplicate by filename: Keep only the single best match (highest max_similarity) for each filename
+            # Deduplicate by filename: Keep only the single best match for each filename
             unique_filename_map = {}
             for doc_id, data in document_matches.items():
                 fname = data.get('filename')
-                # If filename is missing, fallback to doc_id to treat as unique
                 key = fname if fname else doc_id
+                
+                # Sort matches by similarity descending
+                data['matches'].sort(key=lambda x: x['similarity'], reverse=True)
                 
                 if key not in unique_filename_map:
                     unique_filename_map[key] = data
                 else:
-                    # If we found a better version of the same file (higher similarity), replace it
-                    if data['max_similarity'] > unique_filename_map[key]['max_similarity']:
+                    # If we found a better version (higher weighted_sum), replace it
+                    if data['weighted_sum'] > unique_filename_map[key]['weighted_sum']:
                         unique_filename_map[key] = data
             
             # Update document_matches to only contain the unique best matches
             document_matches = {d['document_id']: d for d in unique_filename_map.values()}
 
-            # Calculate Global Aggregate Score FIRST
-            # This represents the total volume of the document that is found in ANY source
-            total_query_chunks = len(query_chunks) if len(query_chunks) > 0 else 1
-            aggregate_score = len(matched_query_chunk_indices) / total_query_chunks
-            aggregate_score = min(aggregate_score, 1.0)
-            
-            # Calculate scores for each document using the GLOBAL aggregate score
+            # Calculate per-document weighted mean scores
             for doc_id, doc_data in document_matches.items():
-                # Document Overall Score: Formula = 60% Global Aggregate + 40% Document Max Similarity
-                doc_overall_score = (0.6 * aggregate_score) + (0.4 * doc_data['max_similarity'])
+                if doc_data['weight_sum'] > 0:
+                    doc_data['similarity_score'] = doc_data['weighted_sum'] / doc_data['weight_sum']
+                else:
+                    doc_data['similarity_score'] = 0.0
                 
-                # Store the GLOBAL aggregate score so it displays consistently (e.g. "30%") everywhere
-                doc_data['aggregate_score'] = float(aggregate_score)
-                doc_data['overall_score'] = float(doc_overall_score)
+                # Clean up internal calculation fields
+                del doc_data['weighted_sum']
+                del doc_data['weight_sum']
 
-            # Sort documents by overall score (highest first)
+            # Sort documents by similarity_score (highest first)
             similar_documents = sorted(
                 document_matches.values(),
-                key=lambda x: x['overall_score'],
+                key=lambda x: x['similarity_score'],
                 reverse=True
             )[:top_k]
             
-            # Global Max Similarity
-            max_similarity = max(
-                [doc['max_similarity'] for doc in similar_documents],
-                default=0.0
-            )
+            # Calculate global overall weighted score
+            if global_weight_sum > 0:
+                overall_score = global_weighted_sum / global_weight_sum
+            else:
+                overall_score = 0.0
             
-            # Global Overall Score: Take the MAX of all individual document overall scores
-            overall_score = max(
-                [doc['overall_score'] for doc in similar_documents],
-                default=0.0
-            )
-            
-            logger.info(f"Scores -> Max Sim: {max_similarity:.2f}, Aggregate: {aggregate_score:.2f}, Overall: {overall_score:.2f}")
+            logger.info(f"Scores -> Overall Weighted: {overall_score:.2f}")
             
             return {
-                "max_similarity": float(max_similarity),
-                "aggregate_score": float(aggregate_score),
                 "overall_score": float(overall_score),
                 "similar_documents": similar_documents,
                 "closest_match": best_match_any_score if not similar_documents else None

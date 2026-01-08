@@ -286,9 +286,9 @@ async def check_similarity(
             report = report_generator.generate_report(
                 query_meta,
                 match_meta,
-                doc['max_similarity'],
-                doc.get('aggregate_score', 0.0),
-                doc.get('overall_score', 0.0)
+                doc['similarity_score'],
+                results.get('overall_score', 0.0),
+                doc.get('matches', [])
             )
             
             doc['report'] = report
@@ -302,7 +302,7 @@ async def check_similarity(
              closest = results.get('closest_match')
              no_match_report = report_generator.generate_no_match_report(query_meta, closest)
         
-        logger.info(f"Similarity check completed: max similarity = {results['max_similarity']:.2f}")
+        logger.info(f"Similarity check completed: overall score = {results['overall_score']:.2f}")
         
         return {
             "success": True,
@@ -310,8 +310,6 @@ async def check_similarity(
             "sentiment": sentiment,
             "context": context,
             "summary": summary,
-            "max_similarity": results["max_similarity"],
-            "aggregate_score": results.get("aggregate_score", 0.0),
             "overall_score": results.get("overall_score", 0.0),
             "similar_documents": results["similar_documents"],
             "no_match_report": no_match_report

@@ -168,17 +168,7 @@ export default function ResultsPage() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-3 items-center gap-0 bg-card rounded-lg border shadow-sm divide-x">
-                    <div className="px-3 md:px-6 py-2 text-center">
-                        <p className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-widest mb-1">Max Similarity</p>
-                        <p className="text-xl md:text-2xl font-bold tracking-tight text-primary">{(data.maxSimilarity * 100).toFixed(1)}%</p>
-                    </div>
-                    <div className="px-3 md:px-6 py-2 text-center">
-                        <p className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-widest mb-1">Aggregate Score</p>
-                        <p className="text-xl md:text-2xl font-bold tracking-tight text-blue-600 dark:text-blue-400">
-                            {(results?.aggregate_score !== undefined ? results.aggregate_score * 100 : 0).toFixed(1)}%
-                        </p>
-                    </div>
+                <div className="grid grid-cols-1 items-center gap-0 bg-card rounded-lg border shadow-sm">
                     <div className="px-3 md:px-6 py-2 text-center">
                         <p className="text-[10px] md:text-xs font-medium text-muted-foreground uppercase tracking-widest mb-1">Overall Score</p>
                         <p className={cn("text-xl md:text-2xl font-bold tracking-tight",
@@ -325,8 +315,8 @@ export default function ResultsPage() {
                                         </Badge>
                                     </div>
                                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <span className={cn("font-medium", doc.max_similarity > 0.7 ? "text-red-600" : "text-orange-600")}>
-                                            {(doc.overall_score * 100).toFixed(1)}% Match Quality
+                                        <span className={cn("font-medium", doc.similarity_score > 0.7 ? "text-red-600" : "text-orange-600")}>
+                                            {(doc.similarity_score * 100).toFixed(1)}% Doc Similarity
                                         </span>
                                         <span>•</span>
                                         <span>{doc.matches?.length || 0} segments matched</span>
@@ -472,7 +462,7 @@ export default function ResultsPage() {
                                 <div className="mt-4 pt-4 border-t border-dashed border-secondary/30 flex justify-center gap-6 text-sm text-muted-foreground">
                                     <span>Sentiment Match: <strong className={doc.report?.comparison.sentiment_contrast.match_status === 'MATCH' ? 'text-green-600' : 'text-orange-600'}>{doc.report?.comparison.sentiment_contrast.match_status}</strong></span>
                                     <span>•</span>
-                                    <span>Semantic Score: <strong>{(doc.max_similarity * 100).toFixed(1)}%</strong></span>
+                                    <span>Similarity Score: <strong>{(doc.similarity_score * 100).toFixed(1)}%</strong></span>
                                 </div>
                             </div>
 

@@ -130,14 +130,8 @@ export default function HistoryPage() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase whitespace-nowrap">
                           Query File
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase whitespace-nowrap">
-                          Max Similarity
-                        </th>
                         <th className="px-6 py-3 text-xs font-medium text-muted-foreground uppercase whitespace-nowrap text-center">
-                          Aggregate
-                        </th>
-                        <th className="px-6 py-3 text-xs font-medium text-muted-foreground uppercase whitespace-nowrap text-center">
-                          Overall
+                          Score
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase whitespace-nowrap">
                           Risk Level
@@ -153,7 +147,7 @@ export default function HistoryPage() {
                     <tbody className="bg-card divide-y divide-border">
                       {!data?.checks || data.checks.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="px-6 py-12 text-center">
+                        <td colSpan={5} className="px-6 py-12 text-center">
                             <div className="flex flex-col items-center justify-center text-muted-foreground">
                               <svg className="h-12 w-12 mb-3 opacity-20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -172,16 +166,6 @@ export default function HistoryPage() {
                           >
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium max-w-[200px] truncate" title={check.queryFilename}>
                               {check.queryFilename}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
-                              <span className="font-semibold text-primary">
-                                {(check.maxSimilarity * 100).toFixed(1)}%
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
-                              <span className="text-blue-600 dark:text-blue-400 font-medium">
-                                {(check.aggregateScore ? check.aggregateScore * 100 : 0).toFixed(1)}%
-                              </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-center">
                               <span className={check.overallScore > 0.7 ? "text-red-600 font-bold" : check.overallScore > 0.4 ? "text-orange-600 font-bold" : "text-green-600 font-bold"}>

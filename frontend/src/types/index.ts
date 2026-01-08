@@ -93,7 +93,6 @@ export interface SimilarityResult {
         }
       }
     }
-    aggregate_score?: number
     overall_score?: number
   }
   createdAt: string
@@ -113,7 +112,7 @@ export interface IngestResponse {
 export interface SimilarDocument {
   documentId: string
   filename: string
-  max_similarity: number
+  similarity_score: number
   overall_score: number
   matched_chunks: number
   matches: Match[]
