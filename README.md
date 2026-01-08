@@ -2,7 +2,7 @@
 
 ## 🌐 Hosted Project
 
-[Live Demo]([https://plagiarism-similarity-detection.vercel.app/](https://www.plagiarism-detector.in/))
+🔗 **Live Demo**: [https://www.plagiarism-detector.in](https://www.plagiarism-detector.in/)
 
 A comprehensive, full-stack plagiarism detection solution that leverages advanced AI to compare documents and detect similarities. Built with a modern tech stack including React, Node.js, Python, and Docker.
 
