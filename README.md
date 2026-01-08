@@ -4,38 +4,81 @@
 
 [Live Demo](https://plagiarism-similarity-detection.vercel.app/)
 
-
 A comprehensive, full-stack plagiarism detection solution that leverages advanced AI to compare documents and detect similarities. Built with a modern tech stack including React, Node.js, Python, and Docker.
+
+---
 
 ## 🚀 Features
 
 ### Authentication & User Management
+
 - **Secure Authentication**: Email/Password login with JWT (Access & Refresh Tokens).
 - **OAuth Integration**: One-click login/register with **Google**.
 - **Email Verification**: OTP-based email verification for new accounts.
 - **Password Management**: Forgot Password, Reset Password, and Change Password flows.
-- **Profile Management**: Update profile details and manage API keys.
+- **Profile Management**: Update profile details and manage settings.
 
 ### Document Management
+
 - **File Upload**: Support for **PDF**, **DOCX**, and **TXT** files.
 - **Document Indexing**: Automatic text extraction, chunking, and vector embedding.
+- **My Documents**: View and manage your uploaded documents.
+- **Community Library**: Browse documents uploaded by other users.
 - **Bulk Actions**: Delete multiple documents or clear history.
 
 ### Plagiarism Detection (AI Service)
+
 - **Advanced Similarity Search**: Uses **Sentence Transformers** (`all-MiniLM-L6-v2`) for semantic understanding.
 - **Vector Database**: **FAISS** (Facebook AI Similarity Search) for high-performance similarity matching.
-- **Detailed Results**: View similarity scores, matched documents, and highlighted text segments.
-- **History**: Track all past similarity checks.
+- **Weighted Scoring System**: Similarity scores calculated using weighted mean based on chunk lengths — longer matching sections carry more weight.
+- **AI-Powered Analysis**: Comprehensive reports explaining what was found, why scores were given, and what it means.
+- **Sentiment Analysis**: Detects document tone (Positive/Negative) using DistilBERT.
+- **Context Extraction**: Extracts key topics and themes using KeyBERT.
+- **Document Summarization**: Auto-generates summaries using DistilBART.
+- **Detailed Results**: View similarity scores, matched documents, highlighted text segments, and in-depth AI analysis.
+- **History Tracking**: Track all past similarity checks with simplified score display.
 
 ### System
+
 - **Dockerized**: Full stack containerization for easy deployment.
+- **Railway Deployment**: Production deployment via Railway with Docker Hub images.
 - **Rate Limiting**: Protection against API abuse.
 - **Audit Logging**: Comprehensive logs for security and debugging.
 
+---
+
+## 📊 Scoring System
+
+The system uses a **weighted mean scoring approach** for accurate similarity detection:
+
+| Score              | Meaning                                                     |
+| ------------------ | ----------------------------------------------------------- |
+| **Document Score** | How much of your content matches a specific source document |
+| **Overall Score**  | How much of your content matches any source in the database |
+
+### How Scoring Works
+
+- Each matching section (chunk) is weighted by its length
+- Longer matching sections contribute more to the final score
+- This ensures small incidental matches don't inflate scores
+- Substantial matching sections are properly weighted
+
+### Risk Levels
+
+| Score Range | Risk Level |
+| ----------- | ---------- |
+| 90%+        | Very High  |
+| 70-90%      | High       |
+| 50-70%      | Medium     |
+| 30-50%      | Low        |
+| <30%        | Very Low   |
+
+---
 
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **Framework**: React 18 (Vite)
 - **Language**: TypeScript
 - **Styling**: TailwindCSS, Radix UI, Shadcn/UI
@@ -43,6 +86,7 @@ A comprehensive, full-stack plagiarism detection solution that leverages advance
 - **Routing**: React Router DOM
 
 ### Backend
+
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Language**: TypeScript
@@ -50,65 +94,214 @@ A comprehensive, full-stack plagiarism detection solution that leverages advance
 - **Auth**: JWT, Google Auth Library
 
 ### AI Service
+
 - **Language**: Python 3.11
 - **Framework**: FastAPI
-- **ML Libraries**: Sentence Transformers, PyTorch, FAISS
+- **ML Libraries**:
+  - Sentence Transformers (Embeddings)
+  - FAISS (Vector Search)
+  - Transformers (Sentiment, Summarization)
+  - KeyBERT (Keyword Extraction)
+  - PyTorch
 - **Server**: Uvicorn
 
 ### Infrastructure
+
 - **Containerization**: Docker, Docker Compose
+- **Container Registry**: Docker Hub
+- **Deployment**: Railway
 - **Reverse Proxy**: Nginx (Production)
 
 ---
 
 ## 📂 Project Structure
 
-Understanding the codebase structure will help you navigate and contribute effectively.
-
 ```
-├── ai-service/          # Python FastAPI service for AI logic
-│   ├── app/             # Core application code
-│   │   ├── document_processor.py # Text extraction & embedding logic
-│   │   ├── similarity_checker.py # FAISS index management
-│   │   └── main.py      # API endpoints
-│   ├── data/            # FAISS index storage (persisted)
-│   └── models/          # ML model cache (downloaded on first run)
-├── backend/             # Node.js Express API
+├── ai-service/              # Python FastAPI AI service
+│   ├── app/                 # Core application modules
+│   │   ├── config.py        # Service configuration
+│   │   ├── context_extractor.py    # KeyBERT keyword extraction
+│   │   ├── document_processor.py   # Text extraction & chunking
+│   │   ├── report_generator.py     # AI analysis report generation
+│   │   ├── sentiment_analyzer.py   # Sentiment analysis (DistilBERT)
+│   │   ├── similarity_checker.py   # FAISS index & weighted scoring
+│   │   ├── summary_generator.py    # Document summarization (DistilBART)
+│   │   └── utils.py         # Utility functions
+│   ├── main.py              # FastAPI endpoints
+│   ├── data/                # FAISS index storage
+│   └── tests/               # Unit tests
+│
+├── backend/                 # Node.js Express API
 │   ├── src/
-│   │   ├── controllers/ # Request handlers (Auth, Document, etc.)
-│   │   ├── models/      # Database models
-│   │   ├── routes/      # API route definitions
-│   │   └── services/    # Business logic (AuthService, EmailService)
-├── frontend/            # React application
+│   │   ├── controllers/     # Request handlers
+│   │   │   ├── authController.ts
+│   │   │   ├── contactController.ts
+│   │   │   ├── documentController.ts
+│   │   │   ├── similarityController.ts
+│   │   │   ├── systemController.ts
+│   │   │   └── userController.ts
+│   │   ├── services/        # Business logic
+│   │   │   ├── aiService.ts
+│   │   │   ├── authService.ts
+│   │   │   ├── cacheService.ts
+│   │   │   ├── documentService.ts
+│   │   │   ├── emailService.ts
+│   │   │   ├── similarityService.ts
+│   │   │   └── userService.ts
+│   │   ├── middleware/      # Auth, rate limiting, etc.
+│   │   ├── routes/          # API route definitions
+│   │   ├── config/          # Database & app config
+│   │   └── utils/           # Helper utilities
+│   └── migrations/          # Database migrations
+│
+├── frontend/                # React application
 │   ├── src/
-│   │   ├── components/  # Reusable UI components (Buttons, Inputs, Modals)
-│   │   ├── pages/       # Application pages (Login, Dashboard, Upload)
-│   │   └── services/    # API client services (Axios configuration)
-├── nginx/               # Nginx configuration for production
-└── docker-compose.yml   # Docker orchestration configuration
+│   │   ├── components/      # Reusable UI components
+│   │   ├── pages/           # Application pages
+│   │   │   ├── LandingPage.tsx
+│   │   │   ├── LoginPage.tsx
+│   │   │   ├── RegisterPage.tsx
+│   │   │   ├── DashboardPage.tsx
+│   │   │   ├── UploadPage.tsx
+│   │   │   ├── SimilarityCheckPage.tsx
+│   │   │   ├── ResultsPage.tsx
+│   │   │   ├── HistoryPage.tsx
+│   │   │   ├── DocumentsPage.tsx
+│   │   │   ├── SettingsPage.tsx
+│   │   │   ├── SecurityPage.tsx
+│   │   │   ├── FAQPage.tsx
+│   │   │   ├── ContactPage.tsx
+│   │   │   ├── PrivacyPage.tsx
+│   │   │   ├── TermsPage.tsx
+│   │   │   └── ... (auth pages)
+│   │   ├── services/        # API client services
+│   │   └── types/           # TypeScript interfaces
+│
+├── nginx/                   # Nginx configuration
+├── scripts/                 # Utility scripts (.bat, .sql)
+├── docker-compose.yml       # Docker orchestration
+└── docker-compose.dev.yml   # Development configuration
 ```
 
-### 📁 Script Location Update
+---
 
-All utility scripts (`.bat`, `.ps1`, `.sql`) are now located in the `scripts/` folder at the project root. To run any script, use the path `scripts/<script-name>` instead of the root folder.
+## 🧠 AI Service Architecture
 
-**Example:**
+### Processing Pipeline
 
-```bash
-scripts/clear-all-data.bat
-scripts/clear-users.bat
-scripts/clear-database.sql
+```
+Document Upload
+      │
+      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    DOCUMENT PROCESSOR                        │
+│  • Text extraction (PDF/DOCX/TXT)                           │
+│  • Smart chunking (300 words, 50 word overlap)              │
+│  • Vector embedding (all-MiniLM-L6-v2)                      │
+└─────────────────────────────────────────────────────────────┘
+      │
+      ▼
+┌──────────────────────────────────────────────────────────────┐
+│                    PARALLEL ANALYSIS                          │
+├──────────────────┬─────────────────┬─────────────────────────┤
+│ SENTIMENT        │ CONTEXT         │ SUMMARY                 │
+│ ANALYZER         │ EXTRACTOR       │ GENERATOR               │
+│ (DistilBERT)     │ (KeyBERT)       │ (DistilBART)            │
+│                  │                 │                         │
+│ Detects:         │ Extracts:       │ Creates:                │
+│ • POSITIVE       │ • Keywords      │ • Concise summary       │
+│ • NEGATIVE       │ • Key phrases   │ • Main points           │
+└──────────────────┴─────────────────┴─────────────────────────┘
+      │
+      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   SIMILARITY CHECKER                         │
+│  • FAISS vector index                                        │
+│  • Cosine similarity search                                  │
+│  • Weighted mean scoring (by chunk length)                   │
+└─────────────────────────────────────────────────────────────┘
+      │
+      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   REPORT GENERATOR                           │
+│  • Score interpretation                                      │
+│  • Detailed analysis breakdown                               │
+│  • Type of similarity detection                              │
+│  • Actionable recommendations                                │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-This change helps keep the project organized. Update any custom commands or documentation to use the new path.
+### ML Models Used
+
+| Model                                             | Purpose                          | Library               |
+| ------------------------------------------------- | -------------------------------- | --------------------- |
+| `all-MiniLM-L6-v2`                                | Text embeddings (384 dimensions) | Sentence Transformers |
+| `distilbert-base-uncased-finetuned-sst-2-english` | Sentiment analysis               | Transformers          |
+| `distilbart-cnn-12-6`                             | Document summarization           | Transformers          |
+| KeyBERT                                           | Keyword/keyphrase extraction     | KeyBERT               |
+
+### AI Report Contents
+
+When you run a similarity check, the AI generates a detailed report including:
+
+1. **Understanding Your Scores**
+
+   - Document-specific similarity percentage
+   - Overall database similarity percentage
+
+2. **What We Found**
+
+   - Result classification (Very High/Moderate/Some/Low Match)
+   - Plain-language explanation
+
+3. **Detailed Analysis**
+
+   - Number of sections compared
+   - Breakdown by similarity level (90%+, 70-90%, etc.)
+   - Type of similarity (direct copy, paraphrasing, topical)
+   - Sample of matched content
+
+4. **Why This Matters**
+
+   - Actionable interpretation
+   - Recommendations for next steps
+
+5. **Related Topics**
+   - Common themes between documents
+   - Keyword overlap
+
+---
+
+## 🔌 API Endpoints
+
+### AI Service (Port 8001)
+
+| Method   | Endpoint            | Description                  |
+| -------- | ------------------- | ---------------------------- |
+| `GET`    | `/`                 | Root endpoint                |
+| `GET`    | `/health`           | Health check                 |
+| `POST`   | `/ingest`           | Process and index a document |
+| `POST`   | `/check-similarity` | Check document against index |
+| `DELETE` | `/document/{id}`    | Remove document from index   |
+| `GET`    | `/stats`            | Get index statistics         |
+| `POST`   | `/clear-index`      | Admin: Clear entire index    |
+
+### Backend (Port 8000)
+
+| Category       | Endpoints                                                                                            |
+| -------------- | ---------------------------------------------------------------------------------------------------- |
+| **Auth**       | `/api/auth/register`, `/api/auth/login`, `/api/auth/google`, `/api/auth/refresh`, `/api/auth/logout` |
+| **Documents**  | `/api/documents`, `/api/documents/:id`, `/api/documents/upload`                                      |
+| **Similarity** | `/api/similarity/check`, `/api/similarity/history`, `/api/similarity/:id`                            |
+| **User**       | `/api/users/profile`, `/api/users/settings`                                                          |
+| **System**     | `/api/system/health`, `/api/contact`                                                                 |
 
 ---
 
 ## ⚡ Getting Started
 
-You can run the project using **Docker** (recommended for ease) or **Locally** (for development).
-
 ### Prerequisites
+
 - **Docker & Docker Compose** (for Docker method)
 - **Node.js v18+** (for Local method)
 - **Python 3.11+** (for Local method)
@@ -116,306 +309,169 @@ You can run the project using **Docker** (recommended for ease) or **Locally** (
 
 ### Method 1: Run with Docker (Recommended)
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repo-url>
-    cd Final-year-major-project
-    ```
+```bash
+# Clone the repository
+git clone https://github.com/Darwingamer01/Plagiarism-Similarity-Detection-.git
+cd Plagiarism-Similarity-Detection-
 
-2.  **Configure Environment:**
-    - The project comes with default configuration in `docker-compose.yml`.
-    - For Google OAuth, you must set `GOOGLE_CLIENT_ID` in `backend/.env` (create it from `.env.example`).
+# Configure environment (copy and edit .env files)
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
 
-3.  **Start the application:**
-    ```bash
-    docker-compose up --build
-    ```
-    *This command builds all images and starts Frontend, Backend, AI Service, Postgres, and Redis.*
+# Start all services
+docker-compose up --build
+```
 
-4.  **Access the application:**
-    - Frontend: `http://localhost:3000`
-    - Backend API: `http://localhost:8000`
-    - AI Service: `http://localhost:8001`
+**Access Points:**
 
-### Method 2: Run Locally (Without Docker)
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8000`
+- AI Service: `http://localhost:8001`
 
-If you prefer to run services individually in separate terminals:
+### Method 2: Run Locally
 
 #### 1. Database Setup
-Ensure you have PostgreSQL and Redis running locally.
-- Create a database named `plagiarism_db`.
-- Update `.env` files in `backend` if your credentials differ from defaults.
 
-#### 2. Backend Setup
+```bash
+# Ensure PostgreSQL and Redis are running
+# Create database: plagiarism_db
+```
+
+#### 2. Backend
+
 ```bash
 cd backend
-# Copy example env
 cp .env.example .env
-# Edit .env with your DB credentials and Google Client ID
 npm install
-# Run database migrations/setup
-npm run migrate # or execute setup-db.sql manually
-# Start server
+npm run migrate
 npm run dev
 ```
-*Backend runs on port 8000.*
 
-#### 3. AI Service Setup
+#### 3. AI Service
+
 ```bash
 cd ai-service
 python -m venv venv
-# Windows
-venv\Scripts\activate
-# Mac/Linux
-source venv/bin/activate
-
+source venv/bin/activate  # Mac/Linux
+# venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 python main.py
 ```
-*AI Service runs on port 8001.*
 
-#### 4. Frontend Setup
+#### 4. Frontend
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-*Frontend runs on port 5173 (or 3000 if configured).*
-
-#### 5. Email OTP Setup
-
-To enable OTP email delivery, add these lines to your `backend/.env` file:
-
-```
-GMAIL_USER=your-email-ID
-GMAIL_PASS=your-app-password
-```
-
-Use a Gmail App Password (see Google Account > Security > App Passwords) for `GMAIL_PASS`.
-
-Restart the backend server after updating `.env`.
-
----
-
-## 📖 Detailed User Guide & Flow
-
-### 1. Authentication Flow
-The system supports both traditional email/password and OAuth.
-
-#### Registration (Email/Password)
-1.  Go to the **Register** page.
-2.  Enter Name, Email, and Password.
-3.  **OTP Verification**:
-    - The system sends a 6-digit OTP to your email.
-    - **Local Development**: Since we use a Mock Email Service, **check the Backend Terminal/Logs**.
-    - Look for:
-      ```
-      INFO: 📧 EMAIL MOCK: Email Verification
-      INFO: To: user@example.com
-      INFO: OTP: 123456
-      ```
-    - Enter `123456` in the frontend to verify and complete registration.
-
-#### Login & Dashboard
-- Login with your credentials.
-- You will be redirected to the **Dashboard**, which shows:
-    - Recent activity stats.
-    - Quick actions (Upload, Check Similarity).
-    - Usage metrics.
-
-#### Google OAuth (One-Click Login)
-1.  **Configuration**:
-    - Create a project in Google Cloud Console.
-    - Enable "Google Identity" / "OAuth 2.0".
-    - Get your `CLIENT_ID`.
-    - Add it to `backend/.env` (`GOOGLE_CLIENT_ID`) and `frontend/.env` (`VITE_GOOGLE_CLIENT_ID`).
-2.  **Usage**:
-    - Click "Continue with Google" on Login/Register page.
-    - **First Time**: You will be asked to confirm your name. An account is created automatically (no password needed).
-    - **Returning**: Logs you in directly.
-
-### 2. Password Management
-- **Forgot Password**:
-    - Click "Forgot Password" on login page.
-    - Enter email -> Check Backend Logs for **Reset Link**.
-    - Click link -> Set new password.
-- **Change Password**:
-    - Go to **Settings**.
-    - Enter current password and new password.
-- **Set Password (OAuth Users)**:
-    - If you logged in via Google, you don't have a password.
-    - Go to **Settings** -> "Set Password".
-    - This enables you to login with email/password in the future.
-
-### 3. Plagiarism Detection Flow
-1.  **Upload Document**:
-    - Go to **Upload** page.
-    - Drag & drop a PDF/DOCX/TXT file.
-    - The file is sent to the AI Service, text is extracted, chunked, and indexed.
-2.  **Check Similarity**:
-    - Go to **Check Similarity** page.
-    - Upload a *query document*.
-    - The system compares this document against *all previously indexed documents*.
-3.  **View Results**:
-    - See a percentage score (e.g., "85% Similar").
-    - View the specific document it matched with.
-    - See the exact text segments that matched.
-
----
-
-## 🧠 Technical Deep Dive: AI Service
-
-The `ai-service` is the brain of the operation. Here's how it works:
-
-### 1. Text Extraction & Cleaning
-- **File Handling**: Uses `pdfplumber` for PDFs and `python-docx` for Word docs.
-- **Cleaning**: Removes excessive whitespace and special characters to normalize text for the model.
-
-### 2. Smart Chunking Algorithm
-- **Why Chunking?** LLMs and embedding models have token limits. We can't feed a whole book at once.
-- **Algorithm**:
-    - Splits text into chunks of **300 words**.
-    - Uses an **Overlap of 50 words**.
-    - *Why Overlap?* To preserve context between chunks. If a plagiarized sentence is split between two chunks, the overlap ensures it's caught in at least one.
-
-### 3. Vector Embeddings
-- **Model**: `sentence-transformers/all-MiniLM-L6-v2`.
-- **Process**: Converts every text chunk into a **384-dimensional vector** (a list of 384 numbers).
-- **Semantic Meaning**: These numbers represent the *meaning* of the text, not just keywords. "The cat sat on the mat" and "The feline rested on the rug" will have very similar vectors.
-
-### 4. Similarity Search (FAISS)
-- **Storage**: Vectors are stored in a FAISS (Facebook AI Similarity Search) index.
-- **Search**: When you query a document, we calculate the **Cosine Similarity** between the query vectors and the stored vectors.
-- **Speed**: FAISS is optimized for searching millions of vectors in milliseconds.
-
----
-
-## 🧹 Data Cleanup Scripts
-
-This system includes several scripts to help you clear different types of data from the plagiarism detection system. These are useful for troubleshooting, starting fresh, or cleaning up specific data. All scripts require typing `YES` (in uppercase) to confirm before deleting data.
-
-### Available Scripts
-
-#### 🗑️ `clear-all-data.bat`
-**Clears EVERYTHING** – Complete system reset
-- Database tables (all data)
-- Uploaded files
-- Redis cache
-- FAISS index
-**Use when:** Starting completely fresh
-
----
-
-#### 📄 `clear-documents.bat`
-**Clears only documents**
-- Documents from database
-- Uploaded files
-- FAISS index
-- Users and similarity history are kept
-**Use when:** You want to remove all documents but keep user accounts and check history
-
----
-
-#### 📊 `clear-similarity-history.bat`
-**Clears only similarity check history**
-- Similarity check records
-- Documents and users are kept
-**Use when:** You want to clear the history of similarity checks but keep documents and users
-
----
-
-#### 👥 `clear-users.bat`
-**Clears all users** (⚠️ Cascades to everything)
-- All users
-- All documents (CASCADE)
-- All similarity checks (CASCADE)
-- Uploaded files
-- FAISS index
-**Use when:** You want to remove all user accounts (this will delete everything due to CASCADE)
-
----
-
-#### 🔴 `clear-redis.bat`
-**Clears only Redis cache**
-- Redis cache
-- Database data is kept
-**Use when:** You want to flush cached data without affecting the database
-
----
-
-#### 🧠 `clear-faiss-index.bat`
-**Clears only FAISS index**
-- FAISS index (document embeddings)
-- Database documents are kept
-**Use when:** FAISS index is out of sync with database, or you want to rebuild embeddings
-
----
-
-### Database Relationship (CASCADE)
-
-```
-users
-    └── documents (CASCADE DELETE)
-             └── document_chunks (CASCADE DELETE)
-    └── similarity_checks (CASCADE DELETE)
-```
-
-**Important:** Deleting users will automatically delete all their documents and similarity checks due to CASCADE constraints.
-
----
-
-### After Clearing FAISS Index
-
-If you clear the FAISS index, remember to **restart the AI Service**:
-
-```bash
-# Find the AI Service terminal and press Ctrl+C, then:
-cd ai-service
-venv\Scripts\activate
-uvicorn main:app --reload --host 0.0.0.0 --port 8001
-```
-
-The FAISS index will be rebuilt automatically as you upload new documents.
-
----
-
-### Safety
-
-All scripts require typing `YES` (in uppercase) to confirm before deleting data.
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how to get started:
-
-1.  **Fork & Clone**: Fork the repo and clone it locally.
-2.  **Branch**: Create a new branch for your feature (`git checkout -b feature/amazing-feature`).
-3.  **Develop**:
-    - **Frontend**: Work in `frontend/src`. Components are in `components/`, pages in `pages/`.
-    - **Backend**: Work in `backend/src`. Add routes in `routes/` and logic in `controllers/`.
-    - **AI**: Work in `ai-service/app`.
-4.  **Test**:
-    - Run `npm run test` in backend/frontend (if tests exist).
-    - Manually verify flows using the Local Development steps above.
-5.  **Commit & Push**: Use descriptive commit messages.
-6.  **Pull Request**: Open a PR describing your changes.
 
 ---
 
 ## 🚀 Deployment
 
-To deploy this to a production server (e.g., AWS EC2, DigitalOcean):
+### Docker Hub Images
 
-1.  **Provision Server**: Get a Linux server with Docker installed.
-2.  **Environment Variables**:
-    - Create a `.env` file on the server with production values (strong passwords, real API keys).
-3.  **Run with Docker**:
-    ```bash
-    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-    ```
-    *(Note: You may need to create a `docker-compose.prod.yml` for specific production overrides like removing exposed ports or setting restart policies).*
-4.  **Nginx**: The included Nginx configuration handles routing and can be configured for SSL (Let's Encrypt).
+The project is deployed using Docker Hub:
+
+- **AI Service**: `darwingamer01/final-year-major-project-ai-service`
+- **Backend**: `darwingamer01/final-year-major-project-backend`
+
+### Railway Deployment
+
+The production environment is hosted on Railway:
+
+- Services automatically pull latest images from Docker Hub
+- PostgreSQL and Redis provided by Railway
+
+### Build & Push
+
+```bash
+# Login to Docker Hub
+docker login
+
+# Build and push AI Service
+docker build -t darwingamer01/final-year-major-project-ai-service:latest ./ai-service
+docker push darwingamer01/final-year-major-project-ai-service:latest
+
+# Build and push Backend
+docker build -t darwingamer01/final-year-major-project-backend:latest ./backend
+docker push darwingamer01/final-year-major-project-backend:latest
+```
 
 ---
 
+## 🧹 Data Cleanup Scripts
+
+All scripts are in the `scripts/` folder:
+
+| Script                         | What it clears                    |
+| ------------------------------ | --------------------------------- |
+| `clear-all-data.bat`           | Everything (complete reset)       |
+| `clear-documents.bat`          | Documents only                    |
+| `clear-similarity-history.bat` | Similarity check history only     |
+| `clear-users.bat`              | All users (cascades to documents) |
+| `clear-redis.bat`              | Redis cache only                  |
+| `clear-faiss-index.bat`        | FAISS vector index only           |
+
+All scripts require typing `YES` to confirm.
+
+---
+
+## 📖 User Guide
+
+### 1. Upload a Document
+
+- Go to **Upload** page
+- Drag & drop a PDF/DOCX/TXT file
+- Document is processed, indexed, and analyzed
+
+### 2. Check Similarity
+
+- Go to **Check Similarity** page
+- Upload a query document
+- System compares against all indexed documents
+
+### 3. View Results
+
+- See **Overall Score** (percentage)
+- View **matched documents** with individual scores
+- Read **AI Analysis** explaining findings
+- Review **matched text segments**
+
+### 4. Manage History
+
+- Go to **History** page
+- View past similarity checks
+- See **Score** and **Risk Level** for each
+- Delete individual checks or clear all
+
+---
+
+## 🤝 Contributing
+
+1. Fork & Clone
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Make changes in appropriate directory:
+   - **Frontend**: `frontend/src`
+   - **Backend**: `backend/src`
+   - **AI Service**: `ai-service/app`
+4. Test your changes
+5. Commit: `git commit -m "feat: description"`
+6. Push & create Pull Request
+
+---
+
+## 📄 License
+
+This project is for educational purposes as part of a Final Year Major Project.
+
+---
+
+## 🙏 Acknowledgments
+
+- [Sentence Transformers](https://www.sbert.net/)
+- [FAISS](https://github.com/facebookresearch/faiss)
+- [Hugging Face Transformers](https://huggingface.co/transformers/)
+- [KeyBERT](https://github.com/MaartenGr/KeyBERT)
+- [Shadcn/UI](https://ui.shadcn.com/)
