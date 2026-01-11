@@ -76,6 +76,7 @@ export function DashboardDocumentationContent() {
                 </TabsList>
 
                 <AnimatePresence mode="wait">
+
                     <MotionTabsContent key="getting-started" value="getting-started" variants={tabContentVariants} initial="initial" animate="animate" exit="exit" className="space-y-8">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
@@ -87,13 +88,14 @@ export function DashboardDocumentationContent() {
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2"><Zap className="h-5 w-5 text-yellow-500" /> Quick Start</CardTitle>
-                                        <CardDescription>Perform your first scan in under 5 minutes.</CardDescription>
+                                        <CardDescription>Perform your first scan via REST API.</CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <div className="space-y-2">
-                                            <Label>1. Initialize Client</Label>
-                                            <div className="rounded-md bg-slate-950 p-4 font-mono text-sm text-slate-50">
-                                                import {'{'} PlagiarismClient {'}'} from '@plagiarism/sdk'
+                                            <Label>1. Authentication</Label>
+                                            <p className="text-sm text-muted-foreground">Obtain your Bearer token by logging in.</p>
+                                            <div className="rounded-md bg-slate-950 p-4 font-mono text-sm text-slate-50 break-all">
+                                                Authorization: Bearer &lt;your_jwt_token&gt;
                                             </div>
                                         </div>
                                     </CardContent>
@@ -101,14 +103,14 @@ export function DashboardDocumentationContent() {
 
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle className="flex items-center gap-2"><Terminal className="h-5 w-5 text-blue-500" /> Installation</CardTitle>
-                                        <CardDescription>Install our SDKs for Node.js or Python.</CardDescription>
+                                        <CardTitle className="flex items-center gap-2"><Terminal className="h-5 w-5 text-blue-500" /> API Access</CardTitle>
+                                        <CardDescription>Direct REST Integration</CardDescription>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <div className="space-y-2">
-                                            <p className="text-sm text-muted-foreground">We currently recommend using our REST API directly. SDKs are coming soon.</p>
+                                            <p className="text-sm text-muted-foreground">We provide a comprehensive REST API for integration.</p>
                                             <div className="rounded-md bg-slate-950 p-4 font-mono text-sm text-slate-50">
-                                                npm install axios
+                                                curl -X POST /api/similarity/check
                                             </div>
                                         </div>
                                     </CardContent>
@@ -131,7 +133,7 @@ export function DashboardDocumentationContent() {
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-sm text-muted-foreground">
-                                            Multi-layered approach using fingerprinting and hashing to detect exact matches and paraphrased content across billions of sources.
+                                            Vector-based semantic search using FAISS to detect paraphrased content against your Community and Private document repositories.
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -141,7 +143,7 @@ export function DashboardDocumentationContent() {
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-sm text-muted-foreground">
-                                            Analyzes text for statistical irregularities (perplexity, burstiness) typical of LLMs like GPT-4, Claude, and Gemini.
+                                            Advanced NLP models (BERT/BART) running on our dedicated AI Service analyze text for context, sentiment, and summarization.
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -151,7 +153,7 @@ export function DashboardDocumentationContent() {
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-sm text-muted-foreground">
-                                            Comprehensive data including Similarity Score, Sentiment Analysis, Context Tags, and AI Probability with highlighted evidence.
+                                            Detailed reports including Similarity Percentages, Highlighted Matches, and AI-generated insights into the writing style.
                                         </p>
                                     </CardContent>
                                 </Card>
@@ -164,17 +166,17 @@ export function DashboardDocumentationContent() {
                             <h2 className="text-2xl font-bold tracking-tight mb-4 flex items-center gap-2">
                                 <Code className="h-6 w-6 text-primary" /> API Reference
                             </h2>
-                            <p className="text-muted-foreground mb-6">Detailed documentation for all API endpoints.</p>
+                            <p className="text-muted-foreground mb-6">Detailed documentation for key API endpoints.</p>
 
                             <div className="space-y-6">
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5 text-red-500" /> Authentication</CardTitle>
-                                        <CardDescription>Secure your API requests with Bearer tokens.</CardDescription>
+                                        <CardDescription>Secure your API requests with your user session token.</CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="rounded-md bg-slate-950 p-4 font-mono text-sm text-slate-50">
-                                            Authorization: Bearer sk_live_...
+                                            Authorization: Bearer &lt;token&gt;
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -184,19 +186,19 @@ export function DashboardDocumentationContent() {
                                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                                         <div className="p-4 border-b bg-muted/30 flex items-center gap-3">
                                             <span className="px-2.5 py-1 rounded-md bg-green-500/10 text-green-600 text-xs font-bold border border-green-500/20">POST</span>
-                                            <code className="text-sm font-mono">/v1/documents/check</code>
+                                            <code className="text-sm font-mono">/api/similarity/check</code>
                                         </div>
                                         <div className="p-4 text-sm text-muted-foreground">
-                                            Initiates a new plagiarism check. Supports plain text or file upload.
+                                            Uploads a file to check for similarity against the indexed database.
                                         </div>
                                     </div>
                                     <div className="rounded-lg border bg-card text-card-foreground shadow-sm">
                                         <div className="p-4 border-b bg-muted/30 flex items-center gap-3">
                                             <span className="px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-600 text-xs font-bold border border-blue-500/20">GET</span>
-                                            <code className="text-sm font-mono">/v1/documents/:id</code>
+                                            <code className="text-sm font-mono">/api/documents/:id</code>
                                         </div>
                                         <div className="p-4 text-sm text-muted-foreground">
-                                            Retrieves the full analysis report for a specific document ID.
+                                            Retrieves details and metadata for a specific uploaded document.
                                         </div>
                                     </div>
                                 </div>
@@ -213,25 +215,25 @@ export function DashboardDocumentationContent() {
                                 <AccordionItem value="item-1" className="bg-card border rounded-xl shadow-sm px-2 hover:border-primary/40 hover:shadow-md transition-all duration-300">
                                     <AccordionTrigger className="px-4 py-4 text-base font-medium hover:no-underline hover:text-primary transition-colors">How is the similarity score calculated?</AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4 text-muted-foreground leading-relaxed">
-                                        Our similarity score is an aggregate percentage based on matches found against our extensive database of web pages, academic papers, and journals. It uses both exact text matching and semantic analysis to detect paraphrasing.
+                                        Our score is based on vector cosine similarity (using FAISS) between your document chunks and our indexed database. It detects both exact matches and semantic similarities (paraphrasing).
                                     </AccordionContent>
                                 </AccordionItem>
                                 <AccordionItem value="item-2" className="bg-card border rounded-xl shadow-sm px-2 hover:border-primary/40 hover:shadow-md transition-all duration-300">
                                     <AccordionTrigger className="px-4 py-4 text-base font-medium hover:no-underline hover:text-primary transition-colors">Does the system store my uploaded documents?</AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4 text-muted-foreground leading-relaxed">
-                                        By default, documents are processed in memory and then discarded. However, you can opt-in to have your documents indexed in your private repository for future comparison within your organization.
+                                        Yes, documents are securely stored in your private repository (Postgres) and indexed in our vector database for future comparison. You can delete them at any time.
                                     </AccordionContent>
                                 </AccordionItem>
                                 <AccordionItem value="item-3" className="bg-card border rounded-xl shadow-sm px-2 hover:border-primary/40 hover:shadow-md transition-all duration-300">
-                                    <AccordionTrigger className="px-4 py-4 text-base font-medium hover:no-underline hover:text-primary transition-colors">What is the difference between AI Detection and Plagiarism Detection?</AccordionTrigger>
+                                    <AccordionTrigger className="px-4 py-4 text-base font-medium hover:no-underline hover:text-primary transition-colors">What happens if the AI service restarts?</AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4 text-muted-foreground leading-relaxed">
-                                        Plagiarism detection finds content copied from other sources. AI detection analyzes the text's statistical patterns (perplexity and burstiness) to determine the likelihood it was generated by an AI model like GPT-4 or Claude.
+                                        Our system uses a hybrid architecture. If the ephemeral AI service restarts, we provide a Re-index tool to restore the search index from your persistent database without data loss.
                                     </AccordionContent>
                                 </AccordionItem>
                                 <AccordionItem value="item-4" className="bg-card border rounded-xl shadow-sm px-2 hover:border-primary/40 hover:shadow-md transition-all duration-300">
                                     <AccordionTrigger className="px-4 py-4 text-base font-medium hover:no-underline hover:text-primary transition-colors">Can I integrate this into my own LMS?</AccordionTrigger>
                                     <AccordionContent className="px-4 pb-4 text-muted-foreground leading-relaxed">
-                                        Yes! We provide a comprehensive REST API and SDKs for Node.js and Python, making it easy to integrate plagiarism checking directly into your Learning Management System or custom application.
+                                        Yes! You can use our REST API endpoints (`/api/similarity/check`) to integrate plagiarism checking into any bespoke application or LMS.
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>

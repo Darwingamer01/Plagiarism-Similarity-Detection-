@@ -50,18 +50,25 @@ class ReportGenerator:
         thought_process.append("### What We Found")
         
         # Main finding based on document score
-        if similarity_score > 0.90:
-            thought_process.append(f"**Result: Very High Match**")
-            thought_process.append(f"We found that **{similarity_score*100:.0f}%** of the compared sections are nearly identical to this source. This is a significant overlap that suggests much of the content may have come from this document.")
-        elif similarity_score > 0.70:
-            thought_process.append(f"**Result: Moderate Match**")
-            thought_process.append(f"We found that **{similarity_score*100:.0f}%** of the compared sections are similar to this source. This means several parts of your document share the same ideas, phrasing, or structure.")
-        elif similarity_score > 0.50:
-            thought_process.append(f"**Result: Some Overlap**")
-            thought_process.append(f"We found **{similarity_score*100:.0f}%** similarity with this source. A few sections of your document have similar content, but most of it appears to be original or from other sources.")
+        # Main finding based on document score
+        if similarity_score >= 0.85:
+            thought_process.append(f"**Result: Severe / Near-Duplicate**")
+            thought_process.append(f"We found that **{similarity_score*100:.1f}%** of the content is effectively identical or highly derived from this source. This indicates a critical level of plagiarism.")
+        elif similarity_score >= 0.75:
+            thought_process.append(f"**Result: Probable Plagiarism**")
+            thought_process.append(f"We found **{similarity_score*100:.1f}%** similarity. This suggests significant portions of the document are heavily based on this source.")
+        elif similarity_score >= 0.60:
+            thought_process.append(f"**Result: High Similarity**")
+            thought_process.append(f"We found **{similarity_score*100:.1f}%** similarity. Several sections share strong structural and topical overlap.")
+        elif similarity_score >= 0.40:
+            thought_process.append(f"**Result: Partial Overlap**")
+            thought_process.append(f"We found **{similarity_score*100:.1f}%** similarity. Some sections of your document have similar content, but it may be limited to specific topics.")
+        elif similarity_score >= 0.20:
+             thought_process.append(f"**Result: Low Similarity**")
+             thought_process.append(f"Only **{similarity_score*100:.1f}%** similarity was found. This likely reflects common terminology or broad topical alignment.")
         else:
-            thought_process.append(f"**Result: Low Match**")
-            thought_process.append(f"Only **{similarity_score*100:.0f}%** similarity was found. The overlap is minimal and likely just common phrases or terminology used in this field.")
+            thought_process.append(f"**Result: Unrelated**")
+            thought_process.append(f"Less than **{similarity_score*100:.1f}%** similarity found. The documents appear unrelated.")
         
         # --- NEW: Detailed Analysis Section ---
         thought_process.append("---")
@@ -78,17 +85,18 @@ class ReportGenerator:
             if high_matches:
                 thought_process.append(f"• **{len(high_matches)} sections** have very high similarity (90%+) — These are nearly word-for-word matches.")
             if moderate_matches:
-                thought_process.append(f"• **{len(moderate_matches)} sections** have moderate similarity (70-90%) — These share similar ideas with some different wording.")
+                thought_process.append(f"• **{len(moderate_matches)} sections** have strong similarity (70-90%) — These share the same ideas and structure, even if words were changed.")
             if low_matches:
-                thought_process.append(f"• **{len(low_matches)} sections** have lower similarity — These have some common concepts but are mostly different.")
+                thought_process.append(f"• **{len(low_matches)} sections** have partial similarity — These discuss similar concepts but differ in execution.")
             
             # What type of similarity was found
             thought_process.append("")
-            if similarity_score > 0.85:
-                thought_process.append("**Type of Similarity**: The matching content appears to be **direct copying or very close paraphrasing**. The sentence structures and key phrases are nearly identical between the documents.")
-            elif similarity_score > 0.70:
-                thought_process.append("**Type of Similarity**: The matching content shows **paraphrasing or shared ideas**. While the exact words may differ, the underlying concepts and arguments are the same.")
-            elif similarity_score > 0.50:
+            if similarity_score >= 0.85:
+                # User specifically requested this distinction
+                thought_process.append("**Type of Similarity**: The matching content shows **deep semantic alignment**. Even if the vocabulary has been changed (paraphrasing), the sentence structure, logical flow, and core ideas remain the same.")
+            elif similarity_score >= 0.70:
+                thought_process.append("**Type of Similarity**: The matching content shows **significant paraphrasing**. The ideas are the same, expressed using different wording (structural and conceptual overlap).")
+            elif similarity_score >= 0.50:
                 thought_process.append("**Type of Similarity**: The overlap appears to be **topical similarity**. Both documents discuss similar subjects but approach them differently.")
             else:
                 thought_process.append("**Type of Similarity**: The minimal overlap is likely due to **common terminology** or standard phrases used in this subject area.")
@@ -108,12 +116,12 @@ class ReportGenerator:
         thought_process.append("---")
         thought_process.append("### Why This Matters")
         
-        if similarity_score > 0.85:
-            thought_process.append("A high match like this means large portions of text are very similar. You should review the matched sections below to see exactly what content overlaps. Consider whether this content needs to be rewritten, properly cited, or if it's acceptable for your use case.")
-        elif similarity_score > 0.60:
-            thought_process.append("A moderate match indicates shared ideas or similar wording. This could be due to using the same sources, discussing similar topics, or some paraphrasing. Review the matched sections to decide if changes are needed.")
+        if similarity_score >= 0.75:
+             thought_process.append("This level of similarity typically requires immediate attention. It suggests the document is not original work. You must review the matches below.")
+        elif similarity_score >= 0.40:
+            thought_process.append("Portions of this document overlap with the source. Review the matched sections to decide if they need to be rewritten or cited.")
         else:
-            thought_process.append("A low match is generally not a concern. The small amount of similar content is likely just common knowledge, standard terminology, or coincidental phrasing.")
+            thought_process.append("This level of similarity is generally acceptable and likely coincidental.")
              
         # Content Analysis - What topics are shared
         relevant_themes = []
