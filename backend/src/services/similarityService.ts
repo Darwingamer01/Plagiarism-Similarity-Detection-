@@ -246,8 +246,8 @@ export class SimilarityService {
             documentId: dbDoc.id,
             filename: dbDoc.original_filename,
             summary: dbDoc.summary, // Include summary
-            max_similarity: doc.max_similarity,
-            overall_score: doc.overall_score || 0,
+            similarity_score: doc.similarity_score, // Fix: Use similarity_score from Python service
+            max_similarity: doc.similarity_score, // Keep for backward compatibility if needed
             matched_chunks: doc.matched_chunks || 0,
             matches: doc.matches || [],
             report: doc.report
